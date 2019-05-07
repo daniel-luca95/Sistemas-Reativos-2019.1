@@ -1,9 +1,16 @@
 local scene = require "sceneManager"
 local characterPackage = require "character"
 
+function love.load()
+  width, height = love.graphics.getDimensions()
+  scene.setScene(1)
+  hero = characterPackage.newHero("hero.png", 20, 200)
+  hero.setScene(scene)
+end
+
 function love.keypressed(key)
   if key == "up" then
-    hero.jump()
+    hero.jump(scene)
   elseif key == "left" then
     hero.accelerate(-80)
   elseif key == "right" then
@@ -17,13 +24,6 @@ function love.keyreleased(key)
   elseif key == "right" then
     hero.accelerate(-80)
   end
-end
-
-function love.load()
-  width, height = love.graphics.getDimensions()
-  scene.setScene(1)
-  
-  hero = characterPackage.newHero("hero.png", 20, 200)
 end
 
 

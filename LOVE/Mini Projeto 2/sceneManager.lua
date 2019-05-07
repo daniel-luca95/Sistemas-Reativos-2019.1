@@ -2,8 +2,16 @@
 local SceneManager = {}
 
 local currentImage
+local currentScene = 1
 
 sceneImages = {"Scene1.png"}
+sceneConstraints = {
+  function(x,y) 
+    local width, height
+    width, height = love.graphics.getDimensions()
+    return y > 5 * height/8 
+  end
+}
 
 SceneManager["draw"] = 
   function (width, height)
@@ -14,10 +22,14 @@ SceneManager["draw"] =
 
 SceneManager["setScene"] =   
   function (sceneNumber)
+    currentScene = sceneNumber
     currentImage = love.graphics.newImage(sceneImages[sceneNumber])
   end
 
-SceneManager["get
+SceneManager["hitAWall"] = 
+  function (xf, yf)
+    return sceneConstraints[currentScene](xy, yf)
+  end
                       
                       
                       

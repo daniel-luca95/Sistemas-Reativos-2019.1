@@ -7,9 +7,14 @@ end
 characterPackage["newHero"] = 
   function (sprite, x, y) -- sprite should be a file name
     local image
+    local scene
+    
+    
     hero = {}
     hero["x"] = x
     hero["y"] = y
+    hero["setScene"] = function(newScene) scene = newScene end
+    
     hero["image"] = love.graphics.newImage(sprite)
     
     hero["draw"] =  function ()
@@ -19,6 +24,12 @@ characterPackage["newHero"] =
     local function move(deltaX, deltaY)
       x = x + deltaX
       y = y + deltaY
+    end
+    
+    local vy
+    vy = function (t, height) 
+      height = height or 80
+      return - 8*height + 32*height * t 
     end
     
     local movementY 
@@ -32,15 +43,11 @@ characterPackage["newHero"] =
     hero["jump"] =  function ()
                       if not is_valid(movementY) then
                         movementY = coroutine.create(
-                          function (dt, scene)
-                            t = -dt
-                            v = function (t, height) 
-                                  height = height or 80
-                                  return - 8*height + 32*height * t 
-                                end
-                            while (t <= 0.5) do
+                          function (dt)
+                            t = 0
+                            while (not scene.hitAWall( x, y + vy(t)*dt )) do
+                              y = y+vy(t)*dt
                               t = t + dt
-                              y = y + v(math.min(t, 0.5))*dt
                               dt = coroutine.yield()
                             end
                           end
@@ -49,10 +56,12 @@ characterPackage["newHero"] =
                     end
     
     hero["update"] =  function(dt)
+                        if not scene.hitAWall(x + dt*speed, y) then
+                          x = x + dt*speed
+                        end
                         if is_valid(movementY) then
                           coroutine.resume(movementY, dt)
                         end
-                        x = x + dt*speed
                       end
     
     return hero
