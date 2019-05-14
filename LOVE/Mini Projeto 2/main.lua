@@ -9,7 +9,7 @@ end
 
 function love.keypressed(key)
   if key == "up" then
-    hero.jump(sceneManager)
+    hero.jump()
   elseif key == "left" then
     hero.accelerate(-80)
   elseif key == "right" then

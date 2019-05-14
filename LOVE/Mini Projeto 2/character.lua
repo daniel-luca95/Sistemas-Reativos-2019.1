@@ -30,7 +30,7 @@ characterPackage["newHero"] =
     
     local vy
     vy = function (t, height) 
-      height = height or 80
+      height = height or 120
       return - 8*height + 32*height * t 
     end
     
@@ -54,8 +54,6 @@ characterPackage["newHero"] =
                     end
     
     hero["update"] =  function(dt)
-                        print("x, y")
-                        print(x, y)
                         _, x, y = scene.canMove(x, y, x + dt*speed, y)
                         if is_valid(movementY) then
                           coroutine.resume(movementY, dt)

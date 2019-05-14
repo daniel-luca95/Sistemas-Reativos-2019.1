@@ -18,15 +18,13 @@ local function getIntersection(x0, y0, xf, yf, line)
   local x0n, y0n, xfn, yfn
   
   n = {line[1], line[2]}
-  
   n_norm = math.sqrt(n[1]*n[1] + n[2]*n[2])
   n[1] = n[1] /n_norm
   n[2] = n[2] /n_norm
-  print(n[1], n[2])
   d = -line[3]/n_norm
   
   c0 = x0*n[1] + y0*n[2] - d
-  cf = xf*n[1] + y0*n[2] - d
+  cf = xf*n[1] + yf*n[2] - d
   
   x0n = x0 - c0 * n[1]
   y0n = y0 - c0 * n[2]
@@ -39,17 +37,15 @@ local function getIntersection(x0, y0, xf, yf, line)
   if math.abs(x0n - xfn) < 1.e-6 then
     hitx = x0n
   else
-    hitx = (x0n * cf + xfn * c0) / (cf+ c0)
+    hitx = (x0n * math.abs(cf) + xfn * math.abs(c0)) / (math.abs(cf) + math.abs(c0))
   end
-  
   if math.abs(y0n - yfn) < 1.e-6 then
     hity = y0n
   else
-    hity = (y0n * cf + yfn * c0) / (cf+ c0)
+    hity = (y0n * math.abs(cf) + yfn * math.abs(c0)) / (math.abs(cf) + math.abs(c0))
   end
   return hitx, hity
 end
-
 -------------------------------------------------------------------
 
 local currentImage
