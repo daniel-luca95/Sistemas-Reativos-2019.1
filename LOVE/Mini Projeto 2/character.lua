@@ -9,7 +9,6 @@ characterPackage["newHero"] =
     local image
     local scene
     
-    
     hero = {}
     hero["x"] = x
     hero["y"] = y
@@ -20,11 +19,14 @@ characterPackage["newHero"] =
     hero["draw"] =  function ()
                       love.graphics.draw(hero["image"], x, y)
                     end
-                    
-    local function move(deltaX, deltaY)
-      x = x + deltaX
-      y = y + deltaY
-    end
+    
+    local speed = 0
+    hero["accelerate"] =  function (deltaSpeed) 
+                            speed = speed + deltaSpeed 
+                          end
+    
+    local movementY 
+    movementY = nil
     
     local vy
     vy = function (t, height) 
@@ -32,22 +34,18 @@ characterPackage["newHero"] =
       return - 8*height + 32*height * t 
     end
     
-    local movementY 
-    movementY = nil
-    local speed = 0
-    hero["move"] = move
-    hero["accelerate"] =  function (deltaSpeed) 
-                            speed = speed + deltaSpeed 
-                          end
-            
     hero["jump"] =  function ()
                       if not is_valid(movementY) then
                         movementY = coroutine.create(
                           function (dt)
+                            local t
                             t = 0
-                            while (not scene.hitAWall( x, y + vy(t)*dt )) do
-                              y = y+vy(t)*dt
+                            local dy
+                            while true do
+                              dy = vy(t)*dt
                               t = t + dt
+                              success, x, y = scene.canMove(x, y, x, y+dy)
+                              if not success then break end
                               dt = coroutine.yield()
                             end
                           end
@@ -56,9 +54,9 @@ characterPackage["newHero"] =
                     end
     
     hero["update"] =  function(dt)
-                        if not scene.hitAWall(x + dt*speed, y) then
-                          x = x + dt*speed
-                        end
+                        print("x, y")
+                        print(x, y)
+                        _, x, y = scene.canMove(x, y, x + dt*speed, y)
                         if is_valid(movementY) then
                           coroutine.resume(movementY, dt)
                         end
