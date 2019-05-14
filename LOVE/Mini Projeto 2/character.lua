@@ -1,5 +1,7 @@
 local characterPackage = {}
 
+local gravity = 120*32
+
 local function is_valid(co)
   return co and coroutine.status(co) ~= "dead"
 end
@@ -8,6 +10,10 @@ characterPackage["newHero"] =
   function (sprite, x, y) -- sprite should be a file name
     local image
     local scene
+    
+    local t, height
+    t = 0
+    height = 0
     
     hero = {}
     hero["x"] = x
@@ -29,37 +35,27 @@ characterPackage["newHero"] =
     movementY = nil
     
     local vy
-    vy = function (t, height) 
-      height = height or 120
-      return - 8*height + 32*height * t 
+    vy = function (t)
+      return - 8*height + gravity * t 
     end
     
     hero["jump"] =  function ()
-                      if not is_valid(movementY) then
-                        movementY = coroutine.create(
-                          function (dt)
-                            local t
-                            t = 0
-                            local dy
-                            while true do
-                              dy = vy(t)*dt
-                              t = t + dt
-                              success, x, y = scene.canMove(x, y, x, y+dy)
-                              if not success then break end
-                              dt = coroutine.yield()
-                            end
-                          end
-                        )
+                      if height == 0 then
+                        t = 0
+                        height = 120
                       end
                     end
     
     hero["update"] =  function(dt)
+                        t = t + dt
                         _, x, y = scene.canMove(x, y, x + dt*speed, y)
-                        if is_valid(movementY) then
-                          coroutine.resume(movementY, dt)
-                        end
+                        success, x, y = scene.canMove(x, y, x, y + dt*vy(t))
+                        if not success then 
+                          t = 0
+                          height = 0
+                        end                       
                       end
-    
+                      
     return hero
   end
 

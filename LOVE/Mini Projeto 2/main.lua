@@ -11,17 +11,17 @@ function love.keypressed(key)
   if key == "up" then
     hero.jump()
   elseif key == "left" then
-    hero.accelerate(-80)
+    hero.accelerate(-180)
   elseif key == "right" then
-    hero.accelerate(80)
+    hero.accelerate(180)
   end
 end
 
 function love.keyreleased(key)
   if key == "left" then
-    hero.accelerate(80)
+    hero.accelerate(180)
   elseif key == "right" then
-    hero.accelerate(-80)
+    hero.accelerate(-180)
   end
 end
 
