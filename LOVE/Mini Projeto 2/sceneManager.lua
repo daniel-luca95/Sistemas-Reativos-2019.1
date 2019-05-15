@@ -10,6 +10,7 @@ local function isOutOfRegion(px, py, line)
   return px*line[1] + py*line[2] + line[3] >= 0
 end
 
+-- Checa se a reta formada pelos pontos (x0,y0) e (xf,yf) intersectam a linha que defini um obstáculo ou um delimite de região
 local function getIntersection(x0, y0, xf, yf, line)
   local n 
   local n_norm
@@ -65,6 +66,8 @@ SceneManager["setScene"] =
     love.window.setMode(currentScene["width"], currentScene["height"])
   end
   
+ --Basicamente, essa função retorna se é possível se mover no cenário, ou seja, primeiro vê se o caminho de onde ele está pra onde ele quer ir tem algum obstáculo entre esses dois pontos. Se tiver ele retorna em que ponto ele intersecta esse obstáculo (porque o personagem deve permanecer parado ali) e ele não pode se mover. Se não tiver ele apenas retorna que pode se mover e retorna o ponto final que era desejado.
+ 
 SceneManager["canMove"] = 
   function (x0, y0, xf, yf)
     for index, constraint in ipairs(currentScene["constraints"]) do
