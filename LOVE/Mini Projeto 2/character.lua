@@ -12,7 +12,6 @@ characterPackage["newHero"] =
   function (sprite, x, y) -- Inicializa o heroi com o sprite(nome de um arquivo de imagem), e posição inicial
     local image
     local scene
-    
     local t, height
     t = 0
     height = 0
@@ -20,9 +19,12 @@ characterPackage["newHero"] =
     hero = {}
     hero["x"] = x --posição atual em x do personagem
     hero["y"] = y --posição atual em y do personagem
+    
     hero["setScene"] = function(newScene) scene = newScene end 
     
     hero["image"] = love.graphics.newImage(sprite) --carrega sprite do personagem
+    
+    hero["width"],hero["height"] = hero["image"]:getDimensions()
     
     hero["draw"] =  function () --desenha o personagem em determinada posição atual
                       love.graphics.draw(hero["image"], x, y)
