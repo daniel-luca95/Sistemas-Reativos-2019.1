@@ -51,26 +51,38 @@ characterPackage["newHero"] =
     
     hero["update"] =  function(dt)
                         t = t + dt
-                        local xcan, ycan
+                        local deltaX, deltaY, success, xtest, ytest
+                        deltaX = 0
+                        deltaY = 0
                         if speed < 0 then
-                          _, xcan, ycan = scene.canMove(x, y, x + dt*speed, y)  -- Atualiza posição de personagem em x se for possível
-                          x = xcan
+                          success, deltaX, _ = scene.canMove(x, y, x + dt*speed, y)  -- Atualiza posição de personagem em x se for possível
+                          if success then
+                            _, deltaX, _ = scene.canMove(x, y + hero.h, x + dt*speed, y + hero.h)
+                          end
                         elseif speed > 0 then
-                          _, xcan, ycan = scene.canMove(x + hero.w, y, x + hero.w + dt*speed, y)
-                          x = xcan - hero.w
+                          success, deltaX, _ = scene.canMove(x + hero.w, y, x + hero.w + dt*speed, y)
+                          if success then
+                            _, deltaX, _ = scene.canMove(x + hero.w, y + hero.h, x + hero.w + dt*speed, y + hero.h)
+                          end
                         end
-                        local success
+                        x = x + deltaX
+                        
                         if vy(t) < 0 then
-                          success, xcan, ycan = scene.canMove(x, y, x, y + dt*vy(t))
-                          y = ycan
+                          success, _, deltaY = scene.canMove(x, y, x, y + dt*vy(t))
+                          if success then
+                            success, _, deltaY = scene.canMove(x + hero.w, y, x + hero.w, y + dt*vy(t))
+                          end
                         elseif vy(t) > 0 then
-                          success, xcan, ycan = scene.canMove(x, y + hero.h, x, y + hero.h + dt*vy(t))
-                          y = ycan - hero.h 
+                          success, _, deltaY = scene.canMove(x, y + hero.h, x, y + hero.h + dt*vy(t)) 
+                          if success then
+                            success, _, deltaY = scene.canMove(x + hero.w, y + hero.h, x + hero.w, y + hero.h + dt*vy(t)) 
+                          end
                         end
+                        y = y + deltaY
                         if not success then 
                           t = 0
                           height = 0
-                        end                       
+                        end
                       end
                       
     return hero

@@ -66,7 +66,7 @@ SceneManager["setScene"] =
     love.window.setMode(currentScene["width"], currentScene["height"])
   end
   
- --Basicamente, essa função retorna se é possível se mover no cenário, ou seja, primeiro vê se o caminho de onde ele está pra onde ele quer ir tem algum obstáculo entre esses dois pontos. Se tiver ele retorna em que ponto ele intersecta esse obstáculo (porque o personagem deve permanecer parado ali) e ele não pode se mover. Se não tiver ele apenas retorna que pode se mover e retorna o ponto final que era desejado.
+ --Basicamente, essa função retorna se é possível se mover no cenário, ou seja, primeiro vê se o caminho de onde ele está pra onde ele quer ir tem algum obstáculo entre esses dois pontos, os demais retornos são quanto o boneco pode percorrer para completar o movimento.
  
 SceneManager["canMove"] = 
   function (x0, y0, xf, yf)
@@ -74,11 +74,11 @@ SceneManager["canMove"] =
       if (isOutOfRegion(x0, y0, constraint["equation"])) and (not isOutOfRegion( xf, yf, constraint["equation"])) then
         x, y = getIntersection(x0, y0, xf, yf, constraint["equation"])
         if constraint["domain"](x, y) then
-          return false, x, y
+          return false, x - x0, y - y0
         end
       end
     end
-    return true, xf, yf
+    return true, xf - x0, yf - y0
   end
 
 return SceneManager
