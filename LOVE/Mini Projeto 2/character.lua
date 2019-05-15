@@ -23,8 +23,7 @@ characterPackage["newHero"] =
     hero["setScene"] = function(newScene) scene = newScene end 
     
     hero["image"] = love.graphics.newImage(sprite) --carrega sprite do personagem
-    
-    hero["width"],hero["height"] = hero["image"]:getDimensions()
+    hero["w"], hero["h"] = hero["image"]:getDimensions()
     
     hero["draw"] =  function () --desenha o personagem em determinada posição atual
                       love.graphics.draw(hero["image"], x, y)
@@ -52,8 +51,22 @@ characterPackage["newHero"] =
     
     hero["update"] =  function(dt)
                         t = t + dt
-                        _, x, y = scene.canMove(x, y, x + dt*speed, y) -- Atualiza posição de personagem em x se for possível
-                        success, x, y = scene.canMove(x, y, x, y + dt*vy(t)) -- Atualiza posição de personagem em y se for possível
+                        local xcan, ycan
+                        if speed < 0 then
+                          _, xcan, ycan = scene.canMove(x, y, x + dt*speed, y)  -- Atualiza posição de personagem em x se for possível
+                          x = xcan
+                        elseif speed > 0 then
+                          _, xcan, ycan = scene.canMove(x + hero.w, y, x + hero.w + dt*speed, y)
+                          x = xcan - hero.w
+                        end
+                        local success
+                        if vy(t) < 0 then
+                          success, xcan, ycan = scene.canMove(x, y, x, y + dt*vy(t))
+                          y = ycan
+                        elseif vy(t) > 0 then
+                          success, xcan, ycan = scene.canMove(x, y + hero.h, x, y + hero.h + dt*vy(t))
+                          y = ycan - hero.h 
+                        end
                         if not success then 
                           t = 0
                           height = 0
