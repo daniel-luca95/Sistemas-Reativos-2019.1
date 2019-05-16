@@ -1,13 +1,16 @@
 local sceneManager = require "sceneManager"
 local characterPackage = require "character"
+local menu = require "menu"
 
 function love.load()
   sceneManager.setScene(1) 
   math.randomseed(require"socket".gettime())
-  hero = characterPackage.newCharacter("hero.png", 20, 200) --inicia herói com um sprite, e posição inicial
-  mate = characterPackage.newCharacter("hero.png", 30, 200)
+  hero = characterPackage.newCharacter("hero.png", 20, 200,10) --inicia herói com um sprite, e posição inicial
+  mate = characterPackage.newCharacter("hero.png", 30, 200,10)
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
   mate.setScene(sceneManager)
+  menu.loadMenu()
+  
 end
 
 function love.keypressed(key) 
@@ -33,6 +36,7 @@ function love.draw()
   sceneManager.draw(width, height)
   hero.draw()
   mate.draw()
+  --menu.draw()
 end
 
 index = 1
