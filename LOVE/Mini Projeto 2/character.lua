@@ -8,29 +8,29 @@ local function is_valid(co)
   return co and coroutine.status(co) ~= "dead"
 end
 
-characterPackage["newHero"] = 
-  function (sprite, x, y) -- Inicializa o heroi com o sprite(nome de um arquivo de imagem), e posição inicial
+characterPackage["newCharacter"] = 
+  function (sprite, x, y) -- Inicializa o herói com o sprite(nome de um arquivo de imagem), e posição inicial
     local image
     local scene
     local t, height
     t = 0
     height = 0
     
-    hero = {}
-    hero["x"] = x --posição atual em x do personagem
-    hero["y"] = y --posição atual em y do personagem
+    character = {}
+    character["x"] = x --posição atual em x do personagem
+    character["y"] = y --posição atual em y do personagem
     
-    hero["setScene"] = function(newScene) scene = newScene end 
+    character["setScene"] = function(newScene) scene = newScene end 
     
-    hero["image"] = love.graphics.newImage(sprite) --carrega sprite do personagem
-    hero["w"], hero["h"] = hero["image"]:getDimensions()
+    character["image"] = love.graphics.newImage(sprite) --carrega sprite do personagem
+    character["w"], character["h"] = character["image"]:getDimensions()
     
-    hero["draw"] =  function () --desenha o personagem em determinada posição atual
-                      love.graphics.draw(hero["image"], x, y)
+    character["draw"] =  function () --desenha o personagem em determinada posição atual
+                      love.graphics.draw(character["image"], x, y)
                     end
     
     local speed = 0 -- velocidade em x, começa zerada
-    hero["accelerate"] =  function (deltaSpeed) --função que atualiza velocidade a somando com uma aceleração
+    character["accelerate"] =  function (deltaSpeed) --função que atualiza velocidade a somando com uma aceleração
                             speed = speed + deltaSpeed 
                           end
     
@@ -42,14 +42,14 @@ characterPackage["newHero"] =
       return - 8*height + gravity * t 
     end
     
-    hero["jump"] =  function () -- Função chamada quando o personagem pula.Ele só pula se tiver no chão (height = 0)
+    character["jump"] =  function () -- Função chamada quando o personagem pula.Ele só pula se tiver no chão (height = 0)
                       if height == 0 then
                         t = 0 
                         height = 120 --Seta a altura do pulo
                       end
                     end
     
-    hero["update"] =  function(dt)
+    character["update"] =  function(dt)
                         t = t + dt
                         local deltaX, deltaY, success, xtest, ytest
                         deltaX = 0
@@ -57,12 +57,12 @@ characterPackage["newHero"] =
                         if speed < 0 then
                           success, deltaX, _ = scene.canMove(x, y, x + dt*speed, y)  -- Atualiza posição de personagem em x se for possível
                           if success then
-                            _, deltaX, _ = scene.canMove(x, y + hero.h, x + dt*speed, y + hero.h)
+                            _, deltaX, _ = scene.canMove(x, y + character.h, x + dt*speed, y + character.h)
                           end
                         elseif speed > 0 then
-                          success, deltaX, _ = scene.canMove(x + hero.w, y, x + hero.w + dt*speed, y)
+                          success, deltaX, _ = scene.canMove(x + character.w, y, x + character.w + dt*speed, y)
                           if success then
-                            _, deltaX, _ = scene.canMove(x + hero.w, y + hero.h, x + hero.w + dt*speed, y + hero.h)
+                            _, deltaX, _ = scene.canMove(x + character.w, y + character.h, x + character.w + dt*speed, y + character.h)
                           end
                         end
                         x = x + deltaX
@@ -70,12 +70,12 @@ characterPackage["newHero"] =
                         if vy(t) < 0 then
                           success, _, deltaY = scene.canMove(x, y, x, y + dt*vy(t))
                           if success then
-                            success, _, deltaY = scene.canMove(x + hero.w, y, x + hero.w, y + dt*vy(t))
+                            success, _, deltaY = scene.canMove(x + character.w, y, x + character.w, y + dt*vy(t))
                           end
                         elseif vy(t) > 0 then
-                          success, _, deltaY = scene.canMove(x, y + hero.h, x, y + hero.h + dt*vy(t)) 
+                          success, _, deltaY = scene.canMove(x, y + character.h, x, y + character.h + dt*vy(t)) 
                           if success then
-                            success, _, deltaY = scene.canMove(x + hero.w, y + hero.h, x + hero.w, y + hero.h + dt*vy(t)) 
+                            success, _, deltaY = scene.canMove(x + character.w, y + character.h, x + character.w, y + character.h + dt*vy(t)) 
                           end
                         end
                         y = y + deltaY
@@ -85,7 +85,7 @@ characterPackage["newHero"] =
                         end
                       end
                       
-    return hero
+    return character
   end
 
 
