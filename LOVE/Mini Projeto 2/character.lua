@@ -17,6 +17,7 @@ characterPackage["newCharacter"] =
     character["HP"] = healthPoints
     character["x"] = x --posição atual em x do personagem
     character["y"] = y --posição atual em y do personagem
+    character["orientation"] = "forward"
     
     character["setScene"] = function(newScene) scene = newScene end 
     
@@ -25,7 +26,12 @@ characterPackage["newCharacter"] =
     
     character["draw"] =  
       function () -- desenha o personagem em determinada posição atual
-        if healthPoints > 0 then
+        if character["HP"] > 0 then
+          -- HP bar
+          r, g, b, a = love.graphics.getColor()
+          love.graphics.setColor(0.2, 1, 0.2, 1)
+          love.graphics.rectangle( "fill", character.x - 4, character.y - 10, character.HP, 3, 3)
+          love.graphics.setColor(r, g, b, a)
           love.graphics.draw(character["image"], character.x, character.y)
         end
       end
@@ -33,7 +39,12 @@ characterPackage["newCharacter"] =
     local speed = 0 -- velocidade em x, começa zerada
     character["accelerate"] =  
       function (deltaSpeed) --função que atualiza velocidade a somando com uma aceleração
-        speed = speed + deltaSpeed 
+        speed = speed + deltaSpeed
+        if speed > 0 then
+          character["orientation"] = "forward"
+        elseif speed < 0 then
+          character["orientation"] = "backward"
+        end
       end
     
     local vy -- Função que calcula velocidade em y e à atualiza, baseada na equação do movimento v = v0 + at
