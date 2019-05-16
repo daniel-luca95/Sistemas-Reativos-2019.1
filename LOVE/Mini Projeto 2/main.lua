@@ -33,7 +33,7 @@ end
 
 
 function love.draw()
-  sceneManager.draw(width, height)
+  sceneManager.draw()
   hero.draw()
   mate.draw()
   --menu.draw()

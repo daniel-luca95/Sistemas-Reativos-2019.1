@@ -12,6 +12,7 @@ characterPackage["newCharacter"] =
     t = 0
     height = 0
     
+    local character
     character = {}
     character["HP"] = healthPoints
     character["x"] = x --posição atual em x do personagem

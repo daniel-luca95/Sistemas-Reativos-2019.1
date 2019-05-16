@@ -10,7 +10,7 @@ local function isOutOfRegion(px, py, line)
   return px*line[1] + py*line[2] + line[3] >= 0
 end
 
--- Checa se a reta formada pelos pontos (x0,y0) e (xf,yf) intersectam a linha que defini um obstáculo ou um delimite de região
+-- Checa se a reta formada pelos pontos (x0,y0) e (xf,yf) intersectam a linha que define um obstáculo ou um delimite de região
 local function getIntersection(x0, y0, xf, yf, line)
   local n 
   local n_norm
@@ -55,7 +55,7 @@ local currentScene = 1
 local scenes = {require "degrau"}
 
 SceneManager["draw"] = 
-  function (width, height)
+  function ()
     love.graphics.draw(currentImage)    
   end
 
