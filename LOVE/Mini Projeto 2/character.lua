@@ -12,6 +12,10 @@ characterPackage["newCharacter"] =
     t = 0
     height = 0
     
+    local function deathCallback ()
+      return
+    end
+    
     local character
     character = {}
     character["HP"] = healthPoints
@@ -28,6 +32,7 @@ characterPackage["newCharacter"] =
       function () -- desenha o personagem em determinada posição atual
         if character["HP"] > 0 then
           -- HP bar
+          local r, g, b, a
           r, g, b, a = love.graphics.getColor()
           love.graphics.setColor(0.2, 1, 0.2, 1)
           love.graphics.rectangle( "fill", character.x - 4, character.y - 10, character.HP, 3, 3)
@@ -62,6 +67,9 @@ characterPackage["newCharacter"] =
     
     character["update"] =  
       function(dt)
+        if character["HP"] <= 0 then
+          deathCallback()
+        end
         t = t + dt
         local deltaX, deltaY, success, xtest, ytest
         deltaX = 0
@@ -96,6 +104,13 @@ characterPackage["newCharacter"] =
           height = 0
         end
       end
+    
+    character["setDeathEvent"] = 
+      function (callback)
+        deathCallback = callback
+      end
+    
+--    character["attack"]
     
     return character
   end
