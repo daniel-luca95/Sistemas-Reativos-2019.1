@@ -3,9 +3,42 @@ local characterPackage = require "character"
 local HeroPackage = require "hero"
 local DragonPackage = require "dragon"
 local TrollPackage = require "troll"
---local menu = require "menu"
 
 enemies = {}
+
+
+
+function overrideUpdate(enemy, period, speed)
+  local t
+  t = 0
+  local counter
+  counter = 1
+  local state
+  state = "initial"
+  
+  local function goBackAndForth()
+    counter = (counter + 1) % 4
+    if counter == 0 or counter == 3 then
+      enemy.accelerate(-speed)
+    else
+      enemy.accelerate(speed)
+    end
+  end
+  
+  local update = enemy["update"]
+  enemy["update"] = 
+    function (dt)
+      t = t + dt
+      if t > period then
+        t = t - period
+        if state == "initial" then
+          goBackAndForth()
+        end
+      end  
+      update(dt)
+    end
+end
+    
 
 function love.load()
   sceneManager.setScene(2) 
@@ -25,8 +58,10 @@ function love.load()
     )
     
   end
+  
   for enemy, _ in pairs(enemies) do
     enemy.setScene(sceneManager)
+    overrideUpdate(enemy, 3, 20)
   end
 end
 
@@ -62,6 +97,8 @@ function love.draw()
     enemy.draw()
   end
 end
+
+
 
 function love.update(dt)
   dt = math.min(dt, 0.1)
