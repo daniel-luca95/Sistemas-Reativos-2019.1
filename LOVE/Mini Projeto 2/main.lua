@@ -6,13 +6,12 @@ local TrollPackage = require "troll"
 --local menu = require "menu"
 
 function love.load()
-  sceneManager.setScene(1) 
+  sceneManager.setScene(2) 
   math.randomseed(require "socket".gettime())
---  hero = HeroPackage.newHero("hero.png") --inicia herói com um sprite, posição inicial e pontos de vida
-  hero = DragonPackage.newDragon("dragon.png", 10, 10)
-  troll = TrollPackage.newTroll("troll.png", 1100, 300)
-  heroine = HeroPackage.newHero("heroine.png", 850, 150)
-  mate = HeroPackage.newHero("heroagain.png", 600, 200)
+  hero = HeroPackage.newHero("herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
+  troll = TrollPackage.newTroll("trollcorrected.png", 1100, 300)
+  heroine = HeroPackage.newHero("heroinecorrected.png", 850, 150)
+  mate = DragonPackage.newDragon("dragoncorrected.png", 600, 200)
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
   heroine.setScene(sceneManager)
   mate.setScene(sceneManager)
@@ -55,6 +54,7 @@ index = 1
 vel = {-100, -100, -100, 400, 400, 400, -300, -300, -300}
 
 function love.update(dt)
+  dt = math.min(dt, 0.1)
   hero.update(dt)
   mate.update(dt)
   heroine.update(dt)
