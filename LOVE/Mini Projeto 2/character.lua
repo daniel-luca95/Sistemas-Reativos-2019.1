@@ -37,7 +37,15 @@ characterPackage["newCharacter"] =
           love.graphics.setColor(0.2, 1, 0.2, 1)
           love.graphics.rectangle( "fill", character.x - 4, character.y - 10, character.HP, 3, 3)
           love.graphics.setColor(r, g, b, a)
-          love.graphics.draw(character["image"], character.x, character.y)
+          local shear, scale
+          if character["orientation"] == "backward" then
+            shear = character.w
+            scale = -1
+          else
+            shear = 0
+            scale = 1
+          end
+          love.graphics.draw(character["image"], character.x, character.y, 0, scale, 1, shear)
         end
       end
     

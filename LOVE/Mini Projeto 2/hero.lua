@@ -4,9 +4,9 @@ Hero = {}
 Character = require "character"
 
 Hero["newHero"] = 
- function (sprite)
+ function (sprite, x, y)
     local hero
-    hero = Character.newCharacter(sprite, 20, 200, 20)
+    hero = Character.newCharacter(sprite, x, y, 20)
     hero["attack"] = 
       function (enemyList)
         local damage, horizontal_range
