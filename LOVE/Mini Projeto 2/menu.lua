@@ -37,7 +37,7 @@ Menu["image"] = "Scene2.png"
   --Função responsável por desenhar tudo relacionado ao menu
     Menu["draw"] =
     function()
-      love.graphics.setBackgroundColor(0.8,0.7,0.8,1) -- Cor de fundo
+      love.graphics.setBackgroundColor(0,0,0,1) -- Cor de fundo
       local widthCanvas = love.graphics.getWidth() -- largura da tela
       local heightCanvas = love.graphics.getHeight() -- altura da tela
       
