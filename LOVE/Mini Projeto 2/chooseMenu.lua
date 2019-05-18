@@ -17,7 +17,7 @@ local buttons = {} --Tabela de botões do menu
 local font = nil -- Tamanho da fonte 
 chooseMenu["show"] = false
 chooseMenu["imageHero"] = "hero/herocorrected.png"
-chooseMenu["imageSaved"] = "hero/princecorrected.png"
+chooseMenu["imagePrisoner"] = "hero/princecorrected.png"
 chooseMenu["clicked"] = false
 --Função que cria botões do Menu
 
@@ -28,42 +28,42 @@ chooseMenu["load"] =
     buttons = {}
     table.insert(buttons,newButton(
         "PrinceHero",
-        "hero/princecorrected.png",
+        love.graphics.newImage("hero/princecorrected.png"),
         function ()
           chooseMenu["imageHero"] = "hero/princecorrected.png"
         end))
     
     table.insert(buttons,newButton(
         "PrincessHero",
-        "hero/princesscorrected.png",
+        love.graphics.newImage("hero/princesscorrected.png"),
         function ()
           chooseMenu["imageHero"] = "hero/princesscorrected.png"
         end))
     
     table.insert(buttons,newButton(
-        "defaultHero",
-        "hero/herocorrected.png",
+        "DefaultHero",
+        love.graphics.newImage("hero/herocorrected.png"),
         function ()
           chooseMenu["imageHero"] = "hero/herocorrected.png"
         end))
     
     table.insert(buttons,newButton(
-        "PrinceSaved",
-        "hero/princecorrected.png",
+        "PrincePrisoner",
+        love.graphics.newImage("hero/princecorrected.png"),
         function ()
           chooseMenu["imageSaved"] = "hero/princecorrected.png"
         end))
     
     table.insert(buttons,newButton(
-        "PrincessSaved",
-        "hero/princesscorrected.png",
+        "PrincessPrisoner",
+        love.graphics.newImage("hero/princesscorrected.png"),
         function ()
           chooseMenu["imageSaved"] = "hero/princesscorrected.png"
         end))
     
     table.insert(buttons,newButton(
-        "defaultSaved",
-        "hero/herocorrected.png",
+        "DefaultPrisoner",
+        love.graphics.newImage("hero/herocorrected.png"),
         function ()
           chooseMenu["imageSaved "] = "hero/herocorrected.png"
         end))
@@ -82,12 +82,16 @@ chooseMenu["load"] =
       local margin = 16 -- margem entre os botões
       local cursory = 0
       local bx = (widthCanvas * 0.5) - (button_width * 0.5) -- Posição inicial em x do botão meio da tela menos metade da largura do botão  
-      local by = (heightCanvas * 0.5) - (button_height * 0.5) - (total_height * 0.5) + cursory -- Posição inicial em y do botão considerando espaço entre botões
-      
+      local by = (heightCanvas * 0.5) - (button_height * 0.5) - (total_height * 0.5) + cursory  -- Posição inicial em y do botão considerando espaço entre botões
+      --love.draw(buttons[1].image, bx,by,0,1,1,0)
       --Desenha todos os botões
       for i, button in ipairs(buttons) do
-        by = (heightCanvas * 0.5) - (button_height * 0.5) - (total_height * 0.5) + cursory
+        by = (heightCanvas * 0.5) - (button_height * 0.75) - (total_height * 0.75) + cursory
         
+        --Espaço entre a escolha de heróis e a escolha de prisioneiros
+        if(i >= 4) then
+          by = by + 2*button_height
+        end
         -- Atualiza estado do botão
         button.last = button.now
         local color = {0.8,0.5,0.6,1} -- Cor dos botões
@@ -114,7 +118,6 @@ chooseMenu["load"] =
         love.graphics.setColor(unpack(color)) -- unpack pega conteúdo da table e espalha nos argumentos da função  
         
         --Desenha o personagem em cima do botão
-        --love.draw(love.graphics.newImage(button.image), bx,by)
         --Um botão é um retângulo preenchido
         love.graphics.rectangle(
           "fill",
@@ -137,7 +140,7 @@ chooseMenu["load"] =
           button.text,
           font,
           (widthCanvas * 0.5) - (texW * 0.5), 
-          (heightCanvas * 0.5) - (button_height * 0.5) - (total_height * 0.5) + cursory + texH * 0.5
+          by + texH * 0.5
           )
       cursory = cursory + (button_height + margin) -- Fazendo cálculo para ter espaço vertical entre botões
       end
