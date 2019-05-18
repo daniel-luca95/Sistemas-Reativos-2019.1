@@ -7,7 +7,7 @@ local menu = require "menu"
 local resumeMenu = require "resumeMenu"
 enemies = {}
 
-function overrideUpdate(enemy, period, speed)
+function overrideUpdate(enemy, period, speed, tolerance, angerFactor)
   local t
   t = 0
   local counter
@@ -24,14 +24,33 @@ function overrideUpdate(enemy, period, speed)
     end
   end
   
+  local function distanceToHero()
+    return hero.x + hero.w/2.0 - enemy.x - enemy.w/2.0
+  end
+  
+  local function pursue()
+    local distance
+    distance = distanceToHero()
+    enemy.accelerate(distance/math.abs(distance)*speed)
+    if hero.y+ hero.h < enemy.y then
+      enemy.jump()
+    end
+    enemy.attack({hero})
+  end
+  
   local update = enemy["update"]
   enemy["update"] = 
     function (dt)
       t = t + dt
       if t > period then
         t = t - period
+        if math.abs(distanceToHero()) < tolerance then
+          state = "attack"
+        end
         if state == "initial" then
           goBackAndForth()
+        else
+          pursue()
         end
       end  
       update(dt)
@@ -43,16 +62,20 @@ function love.load()
   math.randomseed(require "socket".gettime())
   hero = HeroPackage.newHero("herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
-  --heroine.setScene(sceneManager)
-  --mate.setScene(sceneManager)
-  --troll.setScene(sceneManager)
+  hero.setDeathEvent(
+    function ()
+      print("GAME OVER")
+       love.event.quit(0)
+    end
+  )
+  
   menu.loadMenu()
   resumeMenu.load()
   initialPositions = {{395, 640}, {820,520}, {1100,440}}
   enemies = {}
   for index, position in pairs(initialPositions) do
     local enemy
-    enemy = TrollPackage.newTroll("trollcorrected.png", position[1], position[2])
+    enemy = HeroPackage.newHero("trollcorrected.png", position[1], position[2])
     enemies[enemy] = true
     enemy.setDeathEvent( 
       function () 
@@ -63,7 +86,7 @@ function love.load()
   end
   for enemy, _ in pairs(enemies) do
     enemy.setScene(sceneManager)
-    overrideUpdate(enemy, 3, 20)
+    overrideUpdate(enemy, 3, 20, 65, 3)
   end
 end
 
@@ -101,10 +124,6 @@ function love.draw()
   if(menu.start) then 
     sceneManager.draw()
     hero.draw()
-    --mate.draw()
-    --heroine.draw()
-    --troll.draw()
-    hero.draw()
     for enemy, _ in pairs(enemies) do
       enemy.draw()
     end
@@ -122,9 +141,6 @@ end
 function love.update(dt)
   if menu.start then
     hero.update(dt)
-    --mate.update(dt)
-    --heroine.update(dt)
-    --troll.update(dt)
     dt = math.min(dt, 0.1)
     for enemy, _ in pairs(enemies) do
       enemy.update(dt)
