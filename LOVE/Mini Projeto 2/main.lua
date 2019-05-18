@@ -58,7 +58,7 @@ function overrideUpdate(enemy, period, speed, tolerance, angerFactor)
 end
 
 function love.load()
-  sceneManager.setScene(2) 
+  sceneManager.setScene(3) 
   math.randomseed(require "socket".gettime())
   hero = HeroPackage.newHero("herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
@@ -135,8 +135,6 @@ function love.draw()
   end
 end
 
-
-
 function love.update(dt)
   if menu.start then
     hero.update(dt)
@@ -156,13 +154,4 @@ function love.update(dt)
     resumeMenu.show = false
     love.load()
   end
-  
---  local action 
---  action = math.random(1, 15)
---  if action > 9 then
---    mate.accelerate(vel[index])
---    index = (index + 1) % #vel + 1
---  elseif action == 1 then
---    mate.jump()
---  end
 end

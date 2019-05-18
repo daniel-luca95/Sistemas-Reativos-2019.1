@@ -52,7 +52,7 @@ end
 local currentImage
 local currentScene = 1
 
-local scenes = {require "degrau", require "escada"}
+local scenes = {require "degrau", require "escada", require "cave" }
 
 SceneManager["draw"] = 
   function ()
