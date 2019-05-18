@@ -121,17 +121,16 @@ end
 
 
 function love.draw()
-  if(menu.start) then 
-    sceneManager.draw()
+  sceneManager.draw()
+  if not menu.start and not resumeMenu.show then
+    menu.draw()
+  else
     hero.draw()
     for enemy, _ in pairs(enemies) do
       enemy.draw()
     end
-  else
     if resumeMenu.show then
       resumeMenu.draw()
-    else
-      menu.draw()
     end
   end
 end
@@ -149,12 +148,12 @@ function love.update(dt)
   elseif resumeMenu.resume then
     menu.start = true
     resumeMenu.resume = false
-    menu.show = false
+    resumeMenu.show = false
     
   elseif resumeMenu.restart then
     menu.start = true
     resumeMenu.restart = false
-    menu.show = false
+    resumeMenu.show = false
     love.load()
   end
   

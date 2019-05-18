@@ -37,7 +37,7 @@ Menu["start"] = false
   --Função responsável por desenhar tudo relacionado ao menu
     Menu["draw"] =
     function()
-      love.graphics.setBackgroundColor(0,0,0,1) -- Cor de fundo
+      --love.graphics.setBackgroundColor(0,0,0,1) -- Cor de fundo
       local widthCanvas = love.graphics.getWidth() -- largura da tela
       local heightCanvas = love.graphics.getHeight() -- altura da tela
       
@@ -49,15 +49,6 @@ Menu["start"] = false
       local bx = (widthCanvas * 0.5) - (button_width * 0.5) -- Posição inicial em x do botão meio da tela menos metade da largura do botão  
       local by = (heightCanvas * 0.5) - (button_height * 0.5) - (total_height * 0.5) + cursory -- Posição inicial em y do botão considerando espaço entre botões
       
-      love.graphics.setColor(0.7,0.3,0.5,0.8) -- Cor do retângulo em volta dos botões
-        --Retângulo em volta dos botões
-        love.graphics.rectangle(
-          "fill",
-          bx - 20, 
-          by - 20,
-          button_width + 40, -- largura do botão
-          total_height + 40 + margin -- altura do botão
-        )
       --Desenha todos os botões
       for i, button in ipairs(buttons) do
         by = (heightCanvas * 0.5) - (button_height * 0.5) - (total_height * 0.5) + cursory
@@ -97,11 +88,11 @@ Menu["start"] = false
         
         local texW = font:getWidth(button.text) 
         local texH = font:getHeight(button.text)
-        if not Menu.start then
-          love.graphics.setColor(0,0,0,1) -- Cor da letra 
-        else 
+--        if not Menu.start then
+--          love.graphics.setColor(0,0,0,1) -- Cor da letra 
+--        else 
           love.graphics.setColor(1,1,1,1) -- Cor da letra 
-        end
+--        end
         --Escrevendo texto do botão
         love.graphics.print(
           button.text,

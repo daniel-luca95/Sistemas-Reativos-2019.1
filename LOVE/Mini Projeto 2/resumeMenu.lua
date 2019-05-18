@@ -58,15 +58,6 @@ resumeMenu["load"] =
       local bx = (widthCanvas * 0.5) - (button_width * 0.5) -- Posição inicial em x do botão meio da tela menos metade da largura do botão  
       local by = (heightCanvas * 0.5) - (button_height * 0.5) - (total_height * 0.5) + cursory -- Posição inicial em y do botão considerando espaço entre botões
       
-      love.graphics.setColor(0.7,0.3,0.5,0.8) -- Cor do retângulo em volta dos botões
-        --Retângulo em volta dos botões
-        love.graphics.rectangle(
-          "fill",
-          bx - 20, 
-          by - 20,
-          button_width + 40, -- largura do botão
-          total_height + 60 + margin -- altura do botão
-        )
       --Desenha todos os botões
       for i, button in ipairs(buttons) do
         by = (heightCanvas * 0.5) - (button_height * 0.5) - (total_height * 0.5) + cursory
