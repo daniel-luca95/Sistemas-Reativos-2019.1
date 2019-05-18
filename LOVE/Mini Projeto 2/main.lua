@@ -2,7 +2,6 @@ local sceneManager = require "sceneManager"
 local characterPackage = require "character"
 local HeroPackage = require "hero"
 local DragonPackage = require "dragon"
-local TrollPackage = require "troll"
 local menu = require "menu"
 local resumeMenu = require "resumeMenu"
 enemies = {}
@@ -40,6 +39,8 @@ end
 function loadThirdPhase()
   blockKeyReleaseOnce = true
   sceneManager.setScene(3)
+  prisonner = characterPackage.newCharacter("princecorrected.png", 613, 100, 22)
+  prisonner.setScene(sceneManager)
   hero = HeroPackage.newHero("herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
   hero.setDeathEvent(
@@ -166,6 +167,9 @@ function love.draw()
     menu.draw()
   else
     hero.draw()
+    if prisonner then
+      prisonner.draw()
+    end
     for enemy, _ in pairs(enemies) do
       enemy.draw()
     end
@@ -177,8 +181,11 @@ end
 
 function love.update(dt)
   if menu.start then
-    hero.update(dt)
     dt = math.min(dt, 0.1)
+    hero.update(dt) 
+    if prisonner then
+       prisonner.update(dt)
+    end
     for enemy, _ in pairs(enemies) do
       enemy.update(dt)
     end

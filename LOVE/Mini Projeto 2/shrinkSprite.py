@@ -23,29 +23,29 @@ from PIL import Image
 # im.save("C:\\Users\\danielluca\\Documents\\Sistemas-Reativos-2019.1\\LOVE\\Mini Projeto 2\\attackfeedbackcorrected.png")
 
 
-# green = ()
-#
-# im = Image.open("C:\\Users\\danielluca\\Documents\\Sistemas-Reativos-2019.1\\LOVE\\Mini Projeto 2\\troll.png")
-#
-# firstX = im.width
-# firstY = im.height
-# lastX = 0
-# lastY = 0
-# for x in range(im.width):
-#     for y in range(im.height):
-#         if im.getpixel((x,y))[3] > 0:
-#             firstX = min(firstX, x)
-#             firstY = min(firstY, y)
-#             lastX = max(lastX, x)
-#             lastY = max(lastY, y)
-#
-# final = Image.new("RGBA", (lastX - firstX + 1, lastY - firstY + 1))
-# for x in range(final.width):
-#     for y in range(final.height):
-#         final.putpixel((x,y), im.getpixel((x+firstX, y+firstY)))
-#
-#
-# final.save("C:\\Users\\danielluca\\Documents\\Sistemas-Reativos-2019.1\\LOVE\\Mini Projeto 2\\trollcorrected.png")
+green = ()
+
+im = Image.open("C:\\Users\\danie\\source\\repos\\19.1 Prática\\Sistemas Reativos - INF1350\\repositorio\\LOVE\\Mini Projeto 2\\princess.png")
+
+firstX = im.width
+firstY = im.height
+lastX = 0
+lastY = 0
+for x in range(im.width):
+    for y in range(im.height):
+        if im.getpixel((x,y))[3] > 0:
+            firstX = min(firstX, x)
+            firstY = min(firstY, y)
+            lastX = max(lastX, x)
+            lastY = max(lastY, y)
+
+final = Image.new("RGBA", (lastX - firstX + 1, lastY - firstY + 1))
+for x in range(final.width):
+    for y in range(final.height):
+        final.putpixel((x,y), im.getpixel((x+firstX, y+firstY)))
+
+
+final.save("C:\\Users\\danie\\source\\repos\\19.1 Prática\\Sistemas Reativos - INF1350\\repositorio\\LOVE\\Mini Projeto 2\\princesscorrected.png")
 
 
 

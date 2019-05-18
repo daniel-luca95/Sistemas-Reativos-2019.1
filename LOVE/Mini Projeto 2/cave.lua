@@ -28,6 +28,7 @@ constraints[13] = { ["domain"] = function (x,y) return y >= 640 end, ["equation"
 constraints[14] = { ["domain"] = function (x,y) return y >= 579 end, ["equation"] = {-1, 0, 860} }
 constraints[15] = { ["domain"] = function (x,y) return y >= 530 end, ["equation"] = {-1, 0, 956} }
 constraints[16] = { ["domain"] = function (x,y) return y >= 471 end, ["equation"] = {-1, 0, 1038} }
+constraints[17] = { ["domain"] = function (x,y) return x >= 556 or x < 690 end, ["equation"] = {0, -1, 162} }
 
 cave["constraints"] = constraints
 
