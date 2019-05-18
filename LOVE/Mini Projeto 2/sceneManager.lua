@@ -52,7 +52,7 @@ end
 local currentImage
 local currentScene = 1
 
-local scenes = {require "degrau"}
+local scenes = {require "degrau", require "escada"}
 
 SceneManager["draw"] = 
   function ()
@@ -61,7 +61,7 @@ SceneManager["draw"] =
 
 SceneManager["setScene"] =   
   function (sceneNumber)
-    currentScene = scenes[1]
+    currentScene = scenes[sceneNumber]
     currentImage = love.graphics.newImage(currentScene["image"])
     love.window.setMode(currentScene["width"], currentScene["height"])
   end
