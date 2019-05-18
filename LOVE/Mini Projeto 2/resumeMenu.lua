@@ -1,3 +1,4 @@
+local chooseMenu = require "chooseMenu"
 local resumeMenu = {}
 
 -- Um botão tem um texto e uma função que é chamada quando ele é apertado 
@@ -28,6 +29,12 @@ resumeMenu["load"] =
         "Resume",
         function ()
           resumeMenu["resume"] = true
+        end))
+    
+        table.insert(buttons,newButton(
+        "Configurations",
+        function ()
+          chooseMenu["show"] = true
         end))
     
     table.insert(buttons,newButton(

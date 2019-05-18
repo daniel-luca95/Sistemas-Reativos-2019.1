@@ -3,6 +3,11 @@
 local characterPackage = {}
 
 local gravity = 120*32
+characterPackage["setImage"] =
+function (sprite)
+  print(sprite)
+  character["image"] = love.graphics.newImage(sprite) --carrega sprite do personagem
+end
 
 characterPackage["newCharacter"] = 
   function (sprite, x, y, healthPoints) -- Inicializa o herói com o sprite(nome de um arquivo de imagem), e posição inicial

@@ -4,12 +4,13 @@ local HeroPackage = require "hero"
 local DragonPackage = require "dragon"
 local menu = require "menu"
 local resumeMenu = require "resumeMenu"
+local chooseMenu = require "chooseMenu"
 enemies = {}
 
 function loadSecondPhase()
   blockKeyReleaseOnce = true
   sceneManager.setScene(2)
-  hero = HeroPackage.newHero("hero/herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
+  hero = HeroPackage.newHero(chooseMenu.imageHero, 20, 200) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
   hero.setDeathEvent(
     function ()
@@ -39,11 +40,11 @@ end
 function loadThirdPhase()
   blockKeyReleaseOnce = true
   sceneManager.setScene(3)
-  prisonner = characterPackage.newCharacter("hero/princecorrected.png", 613, 100, 22)
+  prisonner = characterPackage.newCharacter(chooseMenu["imageSaved"], 613, 100, 22)
   prisonner.setScene(sceneManager)
-  hero = HeroPackage.newHero("hero/herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
+  hero = HeroPackage.newHero(chooseMenu.imageHero, 20, 200) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
-  hero.setDeathEvent(
+  hero.setDeathEvent( 
     function ()
       print("GAME OVER")
        love.event.quit(0)
@@ -128,6 +129,7 @@ function love.load()
     end
   menu.loadMenu()
   resumeMenu.load()
+  chooseMenu.load()
 end
 
 function love.keypressed(key) 
@@ -164,8 +166,15 @@ end
 
 function love.draw()
   sceneManager.draw()
-  if not menu.start and not resumeMenu.show then
-    menu.draw()
+  if chooseMenu.show then
+      if chooseMenu.clicked then
+        chooseMenu.show = false
+        chooseMenu.clicked = false
+      else
+        chooseMenu.draw()
+      end
+  elseif not menu.start and not resumeMenu.show then
+      menu.draw()
   else
     hero.draw()
     if prisonner then
@@ -181,6 +190,12 @@ function love.draw()
 end
 
 function love.update(dt)
+  if chooseMenu.clicked  then
+      hero.image = love.graphics.newImage(chooseMenu.imageHero)
+      if(prisonner) then
+        prisonner.image = love.graphics.newImage(chooseMenu.imageSaved)
+      end 
+  end
   if menu.start then
     dt = math.min(dt, 0.1)
     hero.update(dt) 

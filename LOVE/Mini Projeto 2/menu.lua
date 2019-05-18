@@ -1,5 +1,5 @@
+local chooseMenu = require "chooseMenu"
 local Menu = {}
-
 -- Um botão tem um texto e uma função que é chamada quando ele é apertado 
 local function newButton(text, fn)
   return
@@ -25,6 +25,12 @@ Menu["start"] = false
         "Start Game",
         function ()
           Menu["start"] = true
+        end))
+    
+    table.insert(buttons,newButton(
+        "Configurations",
+        function ()
+          chooseMenu["show"] = true
         end))
     
     table.insert(buttons,newButton(
