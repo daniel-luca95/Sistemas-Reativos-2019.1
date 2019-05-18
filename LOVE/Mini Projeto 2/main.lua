@@ -9,7 +9,7 @@ enemies = {}
 function loadSecondPhase()
   blockKeyReleaseOnce = true
   sceneManager.setScene(2)
-  hero = HeroPackage.newHero("herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
+  hero = HeroPackage.newHero("hero/herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
   hero.setDeathEvent(
     function ()
@@ -21,7 +21,7 @@ function loadSecondPhase()
   enemies = {}
   for index, position in pairs(initialPositions) do
     local enemy
-    enemy = HeroPackage.newHero("trollcorrected.png", position[1], position[2])
+    enemy = HeroPackage.newHero("enemies/trollcorrected.png", position[1], position[2])
     enemies[enemy] = true
     enemy.setDeathEvent( 
       function () 
@@ -39,9 +39,9 @@ end
 function loadThirdPhase()
   blockKeyReleaseOnce = true
   sceneManager.setScene(3)
-  prisonner = characterPackage.newCharacter("princecorrected.png", 613, 100, 22)
+  prisonner = characterPackage.newCharacter("hero/princecorrected.png", 613, 100, 22)
   prisonner.setScene(sceneManager)
-  hero = HeroPackage.newHero("herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
+  hero = HeroPackage.newHero("hero/herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
   hero.setDeathEvent(
     function ()
@@ -50,7 +50,7 @@ function loadThirdPhase()
     end
   )
   local enemy
-  enemy = DragonPackage.newDragon("dragoncorrected.png", 600, 500)
+  enemy = DragonPackage.newDragon("enemies/dragoncorrected.png", 600, 500)
   enemy.setScene(sceneManager)
   enemy.setDeathEvent(
     function ()
@@ -115,7 +115,7 @@ end
 function love.load()
   enemies = {}
   sceneManager.setScene(1) 
-  hero = HeroPackage.newHero("herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
+  hero = HeroPackage.newHero("hero/herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
   local update
   update = hero["update"]

@@ -7,7 +7,7 @@ local firstChalenge= {}
 firstChalenge["height"] = 800
 firstChalenge["width"] = 1200
 
-firstChalenge["image"] = "Scene1.png"
+firstChalenge["image"] = "cenarios/Scene1.png"
 
 -- After that we define the solid constraints
 -- As constraints são as retas que delimitam os objetos da cena

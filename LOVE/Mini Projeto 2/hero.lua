@@ -9,7 +9,7 @@ Hero["newHero"] =
     local has_attacked, t, attackImage, superUpdate, superDraw
     t = 0.1
     hero = Character.newCharacter(sprite, x, y, 30)
-    attackImage = love.graphics.newImage("attackfeedbackcorrected.png")
+    attackImage = love.graphics.newImage("attacks/attackfeedbackcorrected.png")
     
     superDraw = hero["draw"]
     hero["draw"] =

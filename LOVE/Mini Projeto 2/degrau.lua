@@ -6,7 +6,7 @@ local firstChalenge= {}
 firstChalenge["height"] = 800
 firstChalenge["width"] = 1200
 
-firstChalenge["image"] = "Scene2.png"
+firstChalenge["image"] = "cenarios/Scene2.png"
 
 -- After that we define the solid constraints
 

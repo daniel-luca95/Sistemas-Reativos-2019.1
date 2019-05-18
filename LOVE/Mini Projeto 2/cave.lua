@@ -6,7 +6,7 @@ local cave = {}
 cave["height"] = 800
 cave["width"] = 1200
 
-cave["image"] = "Scene3.png"
+cave["image"] = "cenarios/Scene3.png"
 
 -- After that we define the solid constraints
 -- As constraints são as retas que delimitam os objetos da cena

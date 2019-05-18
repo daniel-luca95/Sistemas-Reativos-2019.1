@@ -6,7 +6,7 @@ local stair= {}
 stair["height"] = 800
 stair["width"] = 1200
 
-stair["image"] = "Scene1.png"
+stair["image"] = "cenarios/Scene1.png"
 
 -- After that we define the solid constraints
 
