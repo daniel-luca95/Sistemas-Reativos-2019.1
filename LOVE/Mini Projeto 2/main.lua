@@ -91,7 +91,6 @@ function love.load()
 end
 
 function love.keypressed(key) 
-  if(menu.start) then
     if key == "m" then
       menu.start = false
       resumeMenu.show = true
@@ -108,7 +107,6 @@ function love.keypressed(key)
       end    
       hero.attack(enemyList)
     end
-  end
 end
 
 function love.keyreleased(key)
