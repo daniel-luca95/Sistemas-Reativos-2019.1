@@ -83,27 +83,52 @@ characterPackage["newCharacter"] =
         deltaX = 0
         deltaY = 0
         if speed < 0 then
-          success, deltaX, _ = scene.canMove(character.x, character.y, character.x + dt*speed, character.y)  -- Atualiza posição de personagem em x se for possível
+          success, deltaX, _ = scene.canMove( character.x, 
+                                              character.y, 
+                                              character.x + dt*speed, 
+                                              character.y )  -- Atualiza posição de personagem em x se for possível
           if success then
-            _, deltaX, _ = scene.canMove(character.x, character.y + character.h, character.x + dt*speed, character.y + character.h)
+            _, deltaX, _ = scene.canMove( character.x, 
+                                          character.y + character.h, 
+                                          character.x + dt*speed, 
+                                          character.y + character.h )
           end
         elseif speed > 0 then
-          success, deltaX, _ = scene.canMove(character.x + character.w, character.y, character.x + character.w + dt*speed, character.y)
+          success, deltaX, _ = scene.canMove( character.x + character.w, 
+                                              character.y, 
+                                              character.x + character.w + dt*speed, 
+                                              character.y )
           if success then
-            _, deltaX, _ = scene.canMove(x + character.w, y + character.h, x + character.w + dt*speed, y + character.h)
+            _, deltaX, _ = scene.canMove( character.x + character.w, 
+                                          character.y + character.h, 
+                                          character.x + character.w + dt*speed, 
+                                          character.y + character.h )
+--            print("deltaX: ",deltaX)
           end
         end
         character.x = character.x + deltaX
         
         if vy(t) < 0 then
-          success, _, deltaY = scene.canMove(character.x, character.y, character.x, character.y + dt*vy(t))
+          success, _, deltaY = scene.canMove( character.x, 
+                                              character.y, 
+                                              character.x, 
+                                              character.y + dt*vy(t)  )
           if success then
-            success, _, deltaY = scene.canMove(character.x + character.w, character.y, character.x + character.w, character.y + dt*vy(t))
+            success, _, deltaY = scene.canMove( character.x + character.w, 
+                                                character.y, 
+                                                character.x + character.w, 
+                                                character.y + dt*vy(t)  )
           end
         elseif vy(t) > 0 then
-          success, _, deltaY = scene.canMove(character.x, character.y + character.h, character.x, character.y + character.h + dt*vy(t)) 
+          success, _, deltaY = scene.canMove( character.x, 
+                                              character.y + character.h, 
+                                              character.x, 
+                                              character.y + character.h + dt*vy(t)  ) 
           if success then
-            success, _, deltaY = scene.canMove(character.x + character.w, character.y + character.h, character.x + character.w, character.y + character.h + dt*vy(t)) 
+            success, _, deltaY = scene.canMove( character.x + character.w, 
+                                                character.y + character.h, 
+                                                character.x + character.w, 
+                                                character.y + character.h + dt*vy(t)  ) 
           end
         end
         character.y = character.y + deltaY

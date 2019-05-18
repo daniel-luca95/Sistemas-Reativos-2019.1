@@ -113,6 +113,7 @@ function overrideUpdate(enemy, period, speed, tolerance, angerFactor)
 end
 
 function love.load()
+  enemies = {}
   sceneManager.setScene(1) 
   hero = HeroPackage.newHero("herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
