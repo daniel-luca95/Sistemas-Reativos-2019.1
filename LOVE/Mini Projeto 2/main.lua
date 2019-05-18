@@ -40,7 +40,7 @@ end
 function loadThirdPhase()
   blockKeyReleaseOnce = true
   sceneManager.setScene(3)
-  prisonner = characterPackage.newCharacter(chooseMenu["image Prisoner"], 613, 100, 22)
+  prisonner = characterPackage.newCharacter(chooseMenu["imagePrisoner"], 613, 100, 22)
   prisonner.setScene(sceneManager)
   hero = HeroPackage.newHero(chooseMenu.imageHero, 20, 200) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
