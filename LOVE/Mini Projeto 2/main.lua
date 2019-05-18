@@ -4,6 +4,7 @@ local HeroPackage = require "hero"
 local DragonPackage = require "dragon"
 local TrollPackage = require "troll"
 local menu = require "menu"
+local resumeMenu = require "resumeMenu"
 enemies = {}
 
 function overrideUpdate(enemy, period, speed)
@@ -46,7 +47,9 @@ function love.load()
   --mate.setScene(sceneManager)
   --troll.setScene(sceneManager)
   menu.loadMenu()
+  resumeMenu.load()
   initialPositions = {{395, 640}, {820,520}, {1100,440}}
+  enemies = {}
   for index, position in pairs(initialPositions) do
     local enemy
     enemy = TrollPackage.newTroll("trollcorrected.png", position[1], position[2])
@@ -66,7 +69,10 @@ end
 
 function love.keypressed(key) 
   if(menu.start) then
-    if key == "up" then
+    if key == "m" then
+      menu.start = false
+      resumeMenu.show = true
+    elseif key == "up" then
       hero.jump()
     elseif key == "left" then
       hero.accelerate(-180)
@@ -83,13 +89,11 @@ function love.keypressed(key)
 end
 
 function love.keyreleased(key)
-  if menu.start then
     if key == "left" then
       hero.accelerate(180)
     elseif key == "right" then
       hero.accelerate(-180)
     end
-  end
 end
 
 
@@ -105,7 +109,11 @@ function love.draw()
       enemy.draw()
     end
   else
-    menu.draw()
+    if resumeMenu.show then
+      resumeMenu.draw()
+    else
+      menu.draw()
+    end
   end
 end
 
@@ -118,11 +126,22 @@ function love.update(dt)
     --heroine.update(dt)
     --troll.update(dt)
     dt = math.min(dt, 0.1)
-    hero.update(dt)
     for enemy, _ in pairs(enemies) do
       enemy.update(dt)
     end
+    
+  elseif resumeMenu.resume then
+    menu.start = true
+    resumeMenu.resume = false
+    menu.show = false
+    
+  elseif resumeMenu.restart then
+    menu.start = true
+    resumeMenu.restart = false
+    menu.show = false
+    love.load()
   end
+  
 --  local action 
 --  action = math.random(1, 15)
 --  if action > 9 then

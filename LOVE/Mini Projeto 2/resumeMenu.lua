@@ -1,4 +1,4 @@
-local Menu = {}
+local resumeMenu = {}
 
 -- Um botão tem um texto e uma função que é chamada quando ele é apertado 
 local function newButton(text, fn)
@@ -14,17 +14,26 @@ end
 
 local buttons = {} --Tabela de botões do menu
 local font = nil -- Tamanho da fonte 
-Menu["start"] = false
+resumeMenu["resume"] = false
+resumeMenu["show"] = false
+resumeMenu["image"] = "Scene2.png"
 --Função que cria botões do Menu
-  Menu["loadMenu"] =
+
+resumeMenu["load"] =
   
   function()
     font = love.graphics.newFont(32)
     buttons = {}
     table.insert(buttons,newButton(
-        "Start Game",
+        "Resume",
         function ()
-          Menu["start"] = true
+          resumeMenu["resume"] = true
+        end))
+    
+    table.insert(buttons,newButton(
+        "Restart",
+        function ()
+          resumeMenu["restart"] = true
         end))
     
     table.insert(buttons,newButton(
@@ -35,7 +44,7 @@ Menu["start"] = false
     end
   
   --Função responsável por desenhar tudo relacionado ao menu
-    Menu["draw"] =
+    resumeMenu["draw"] =
     function()
       love.graphics.setBackgroundColor(0,0,0,1) -- Cor de fundo
       local widthCanvas = love.graphics.getWidth() -- largura da tela
@@ -56,7 +65,7 @@ Menu["start"] = false
           bx - 20, 
           by - 20,
           button_width + 40, -- largura do botão
-          total_height + 40 + margin -- altura do botão
+          total_height + 60 + margin -- altura do botão
         )
       --Desenha todos os botões
       for i, button in ipairs(buttons) do
@@ -97,7 +106,7 @@ Menu["start"] = false
         
         local texW = font:getWidth(button.text) 
         local texH = font:getHeight(button.text)
-        if not Menu.start then
+        if not resumeMenu.show then
           love.graphics.setColor(0,0,0,1) -- Cor da letra 
         else 
           love.graphics.setColor(1,1,1,1) -- Cor da letra 
@@ -113,4 +122,4 @@ Menu["start"] = false
       end
 
   end
-return Menu    
+return resumeMenu 
