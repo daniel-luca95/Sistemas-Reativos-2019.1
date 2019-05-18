@@ -7,6 +7,60 @@ local menu = require "menu"
 local resumeMenu = require "resumeMenu"
 enemies = {}
 
+function loadSecondPhase()
+  blockKeyReleaseOnce = true
+  sceneManager.setScene(2)
+  hero = HeroPackage.newHero("herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
+  hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
+  hero.setDeathEvent(
+    function ()
+      print("GAME OVER")
+       love.event.quit(0)
+    end
+  )
+  initialPositions = {{395, 640}, {820,520}, {1100,440}}
+  enemies = {}
+  for index, position in pairs(initialPositions) do
+    local enemy
+    enemy = HeroPackage.newHero("trollcorrected.png", position[1], position[2])
+    enemies[enemy] = true
+    enemy.setDeathEvent( 
+      function () 
+        enemies[enemy] = nil
+        if next(enemies) == nil then
+          loadThirdPhase()
+        end
+      end
+    )
+    enemy.setScene(sceneManager)
+    overrideUpdate(enemy, 3, 20, 65, 3)
+  end
+end
+
+function loadThirdPhase()
+  blockKeyReleaseOnce = true
+  sceneManager.setScene(3)
+  hero = HeroPackage.newHero("herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
+  hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
+  hero.setDeathEvent(
+    function ()
+      print("GAME OVER")
+       love.event.quit(0)
+    end
+  )
+  local enemy
+  enemy = DragonPackage.newDragon("dragoncorrected.png", 600, 500)
+  enemy.setScene(sceneManager)
+  enemy.setDeathEvent(
+    function ()
+      print("Won!")
+      love.event.quit(0)
+    end
+  )
+  overrideUpdate(enemy, 2, 20, 50, 2)
+  enemies[enemy] = true  
+end
+
 function overrideUpdate(enemy, period, speed, tolerance, angerFactor)
   local t
   t = 0
@@ -58,63 +112,51 @@ function overrideUpdate(enemy, period, speed, tolerance, angerFactor)
 end
 
 function love.load()
-  sceneManager.setScene(3) 
-  math.randomseed(require "socket".gettime())
+  sceneManager.setScene(1) 
   hero = HeroPackage.newHero("herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
-  hero.setDeathEvent(
-    function ()
-      print("GAME OVER")
-       love.event.quit(0)
+  local update
+  update = hero["update"]
+  hero["update"] =
+    function (dt)
+      update(dt)
+      if hero.x > 1150 then
+        loadSecondPhase()
+      end
     end
-  )
-  
   menu.loadMenu()
   resumeMenu.load()
-  initialPositions = {{395, 640}, {820,520}, {1100,440}}
-  enemies = {}
-  for index, position in pairs(initialPositions) do
-    local enemy
-    enemy = HeroPackage.newHero("trollcorrected.png", position[1], position[2])
-    enemies[enemy] = true
-    enemy.setDeathEvent( 
-      function () 
-        enemies[enemy] = nil
-      end
-    )
-    
-  end
-  for enemy, _ in pairs(enemies) do
-    enemy.setScene(sceneManager)
-    overrideUpdate(enemy, 3, 20, 65, 3)
-  end
 end
 
 function love.keypressed(key) 
-    if key == "m" then
-      menu.start = false
-      resumeMenu.show = true
-    elseif key == "up" then
-      hero.jump()
-    elseif key == "left" then
-      hero.accelerate(-180)
-    elseif key == "right" then
-      hero.accelerate(180)
-    elseif key == "space" then
-      local enemyList = {}
-      for enemy, _ in pairs(enemies) do
-        table.insert(enemyList, enemy)
-      end    
-      hero.attack(enemyList)
-    end
+  if key == "m" then
+    menu.start = false
+    resumeMenu.show = true
+  elseif key == "up" then
+    hero.jump()
+  elseif key == "left" then
+    hero.accelerate(-180)
+  elseif key == "right" then
+    hero.accelerate(180)
+  elseif key == "space" then
+    local enemyList = {}
+    for enemy, _ in pairs(enemies) do
+      table.insert(enemyList, enemy)
+    end    
+    hero.attack(enemyList)
+  end -- if key
 end
 
 function love.keyreleased(key)
-    if key == "left" then
-      hero.accelerate(180)
-    elseif key == "right" then
-      hero.accelerate(-180)
-    end
+  if not blockKeyReleaseOnce then
+      if key == "left" then
+        hero.accelerate(180)
+      elseif key == "right" then
+        hero.accelerate(-180)
+      end
+  else 
+    blockKeyReleaseOnce = false
+  end
 end
 
 
