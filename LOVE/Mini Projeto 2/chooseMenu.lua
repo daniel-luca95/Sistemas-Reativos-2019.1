@@ -51,21 +51,21 @@ chooseMenu["load"] =
         "PrincePrisoner",
         love.graphics.newImage("hero/princecorrected.png"),
         function ()
-          chooseMenu["imageSaved"] = "hero/princecorrected.png"
+          chooseMenu["imagePrisoner"] = "hero/princecorrected.png"
         end))
     
     table.insert(buttons,newButton(
         "PrincessPrisoner",
         love.graphics.newImage("hero/princesscorrected.png"),
         function ()
-          chooseMenu["imageSaved"] = "hero/princesscorrected.png"
+          chooseMenu["imagePrisoner"] = "hero/princesscorrected.png"
         end))
     
     table.insert(buttons,newButton(
         "DefaultPrisoner",
         love.graphics.newImage("hero/herocorrected.png"),
         function ()
-          chooseMenu["imageSaved "] = "hero/herocorrected.png"
+          chooseMenu["imagePrisoner "] = "hero/herocorrected.png"
         end))
     end
   

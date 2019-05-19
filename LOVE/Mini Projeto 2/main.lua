@@ -10,6 +10,7 @@ enemies = {}
 function loadSecondPhase()
   blockKeyReleaseOnce = true
   sceneManager.setScene(2)
+  prisoner = nil
   hero = HeroPackage.newHero(chooseMenu.imageHero, 20, 200) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
   hero.setDeathEvent(
@@ -40,8 +41,8 @@ end
 function loadThirdPhase()
   blockKeyReleaseOnce = true
   sceneManager.setScene(3)
-  prisonner = characterPackage.newCharacter(chooseMenu["imagePrisoner"], 613, 100, 22)
-  prisonner.setScene(sceneManager)
+  prisoner = characterPackage.newCharacter(chooseMenu["imagePrisoner"], 613, 100, 22)
+  prisoner.setScene(sceneManager)
   hero = HeroPackage.newHero(chooseMenu.imageHero, 20, 200) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
   hero.setDeathEvent( 
@@ -115,6 +116,7 @@ end
 
 function love.load()
   enemies = {}
+  prisoner = nil 
   sceneManager.setScene(1) 
   hero = HeroPackage.newHero("hero/herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
@@ -179,8 +181,8 @@ function love.draw()
       menu.draw()
   else
     hero.draw()
-    if prisonner then
-      prisonner.draw()
+    if prisoner then
+      prisoner.draw()
     end
     for enemy, _ in pairs(enemies) do
       enemy.draw()
@@ -194,15 +196,15 @@ end
 function love.update(dt)
   if chooseMenu.clicked  then
       hero.image = love.graphics.newImage(chooseMenu.imageHero)
-      if(prisonner) then
-        prisonner.image = love.graphics.newImage(chooseMenu.imagePrisoner)
+      if(prisoner ) then
+        prisoner.image = love.graphics.newImage(chooseMenu.imagePrisoner)
       end 
   end
   if menu.start then
     dt = math.min(dt, 0.1)
     hero.update(dt) 
-    if prisonner then
-       prisonner.update(dt)
+    if prisoner  then
+       prisoner.update(dt)
     end
     for enemy, _ in pairs(enemies) do
       enemy.update(dt)
