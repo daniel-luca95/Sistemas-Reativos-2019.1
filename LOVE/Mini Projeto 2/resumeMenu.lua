@@ -17,9 +17,8 @@ local buttons = {} --Tabela de botões do menu
 local font = nil -- Tamanho da fonte 
 resumeMenu["resume"] = false
 resumeMenu["show"] = false
-resumeMenu["image"] = "Scene2.png"
---Função que cria botões do Menu
 
+--Função que cria botões do Menu
 resumeMenu["load"] =
   
   function()
@@ -104,17 +103,14 @@ resumeMenu["load"] =
         
         local texW = font:getWidth(button.text) 
         local texH = font:getHeight(button.text)
-        if not resumeMenu.show then
-          love.graphics.setColor(0,0,0,1) -- Cor da letra 
-        else 
-          love.graphics.setColor(1,1,1,1) -- Cor da letra 
-        end
+
+        love.graphics.setColor(1,1,1,1) -- Cor da letra 
         --Escrevendo texto do botão
         love.graphics.print(
           button.text,
           font,
           (widthCanvas * 0.5) - (texW * 0.5), 
-          (heightCanvas * 0.5) - (button_height * 0.5) - (total_height * 0.5) + cursory + texH * 0.5
+          by + texH * 0.5
           )
       cursory = cursory + (button_height + margin) -- Fazendo cálculo para ter espaço vertical entre botões
       end

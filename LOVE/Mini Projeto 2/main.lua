@@ -166,14 +166,16 @@ end
 
 function love.draw()
   sceneManager.draw()
+  
+  -- Se o menu de configuração foi acionado
   if chooseMenu.show then
-      if chooseMenu.clicked then
+      if chooseMenu.clicked then -- Se algum botão do menu de seleção for clicado volta ao menu principal  
         chooseMenu.show = false
         chooseMenu.clicked = false
       else
-        chooseMenu.draw()
+        chooseMenu.draw() -- Desenha menu de escolher personagens
       end
-  elseif not menu.start and not resumeMenu.show then
+  elseif not menu.start and not resumeMenu.show then --  Se o jogo não tiver começado e o resume menu não tiver aparecendo desenha menu principal
       menu.draw()
   else
     hero.draw()
@@ -206,11 +208,13 @@ function love.update(dt)
       enemy.update(dt)
     end
     
+  -- Se o botão de resume for apertado o menu de resume fecha e o jogo continua
   elseif resumeMenu.resume then
     menu.start = true
     resumeMenu.resume = false
     resumeMenu.show = false
     
+  -- Se o botão de restart for apertado o menu de resume fecha e recomeça o jogo chamando função de load
   elseif resumeMenu.restart then
     menu.start = true
     resumeMenu.restart = false

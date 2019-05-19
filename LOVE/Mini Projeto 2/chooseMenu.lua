@@ -19,8 +19,8 @@ chooseMenu["show"] = false
 chooseMenu["imageHero"] = "hero/herocorrected.png"
 chooseMenu["imagePrisoner"] = "hero/princecorrected.png"
 chooseMenu["clicked"] = false
---Função que cria botões do Menu
 
+--Função que cria botões do Menu
 chooseMenu["load"] =
   
   function()
@@ -126,15 +126,11 @@ chooseMenu["load"] =
           button_width, -- largura do botão
           button_height -- altura do botão
         )
-          
         
         local texW = font:getWidth(button.text) 
         local texH = font:getHeight(button.text)
-        if not chooseMenu.show then
-          love.graphics.setColor(0,0,0,1) -- Cor da letra 
-        else 
-          love.graphics.setColor(1,1,1,1) -- Cor da letra 
-        end
+
+        love.graphics.setColor(1,1,1,1) -- Cor da letra 
         --Escrevendo texto do botão
         love.graphics.print(
           button.text,
