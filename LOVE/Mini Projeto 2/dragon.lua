@@ -9,7 +9,7 @@ Dragon["newDragon"] =
     is_attacking = false
     damage = 5
     
-    troll = Character.newCharacter(sprite, x, y, 30)
+    troll = Character.newCharacter(sprite, x, y, 60)
     
     local superDraw, superUpdate
     superDraw = troll["draw"]

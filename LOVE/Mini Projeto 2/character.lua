@@ -64,6 +64,16 @@ characterPackage["newCharacter"] =
           character["orientation"] = "backward"
         end
       end
+      
+      character["setSpeed"] =
+        function (newSpeed)
+          speed = newSpeed
+          if speed > 0 then
+            character["orientation"] = "forward"
+          elseif speed < 0 then
+            character["orientation"] = "backward"
+          end
+        end
     
     local vy -- Função que calcula velocidade em y e à atualiza, baseada na equação do movimento v = v0 + at
     vy = function (t)

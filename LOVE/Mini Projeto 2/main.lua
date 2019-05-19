@@ -18,7 +18,7 @@ function loadSecondPhase()
        love.event.quit(0)
     end
   )
-  initialPositions = {{395, 640}, {820,520}, {1100,440}}
+  initialPositions = {{1100,440}, {820,520}, {395, 640}}
   enemies = {}
   for index, position in pairs(initialPositions) do
     local enemy
@@ -32,8 +32,8 @@ function loadSecondPhase()
         end
       end
     )
+    overrideUpdate(enemy, 1+index/2.0, 20+index*3, 65, index)
     enemy.setScene(sceneManager)
-    overrideUpdate(enemy, 3, 20, 65, 3)
   end
 end
 
@@ -59,7 +59,7 @@ function loadThirdPhase()
       love.event.quit(0)
     end
   )
-  overrideUpdate(enemy, 2, 20, 50, 2)
+  overrideUpdate(enemy, 1, 40, 300, 3)
   enemies[enemy] = true  
 end
 
@@ -87,11 +87,11 @@ function overrideUpdate(enemy, period, speed, tolerance, angerFactor)
   local function pursue()
     local distance
     distance = distanceToHero()
-    enemy.accelerate(distance/math.abs(distance)*speed)
+    enemy.setSpeed(distance/math.abs(distance)*speed)
     if hero.y+ hero.h < enemy.y then
       enemy.jump()
     end
-    enemy.attack({hero})
+    enemy.attack({hero}) 
   end
   
   local update = enemy["update"]

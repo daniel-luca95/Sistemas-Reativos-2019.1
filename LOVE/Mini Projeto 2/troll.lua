@@ -11,7 +11,7 @@ Troll["newTroll"] =
       function (enemyList)
         local damage, horizontal_range
         damage = 10
-        horizontal_range = 10
+        horizontal_range = 30
         for index, enemy in ipairs(enemyList) do
           if enemy.y + enemy.h <= troll.y + troll.h and enemy.y >= troll.y then
             
