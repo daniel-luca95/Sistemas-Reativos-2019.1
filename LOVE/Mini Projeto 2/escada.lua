@@ -5,6 +5,7 @@ local stair= {}
 
 stair["height"] = 800
 stair["width"] = 1200
+stair["gravity"] = 120*32
 
 stair["image"] = "cenarios/Scene1.png"
 

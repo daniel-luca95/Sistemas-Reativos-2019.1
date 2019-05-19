@@ -2,7 +2,6 @@
 
 local characterPackage = {}
 
-local gravity = 120*32
 characterPackage["setImage"] =
 function (sprite)
   print(sprite)
@@ -77,7 +76,7 @@ characterPackage["newCharacter"] =
     
     local vy -- Função que calcula velocidade em y e à atualiza, baseada na equação do movimento v = v0 + at
     vy = function (t)
-      return - 8*height + gravity * t 
+      return - 8*height + scene["gravity"] * t 
     end
     
     character["jump"] =  

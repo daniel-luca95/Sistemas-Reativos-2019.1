@@ -62,6 +62,7 @@ SceneManager["draw"] =
 SceneManager["setScene"] =   
   function (sceneNumber)
     currentScene = scenes[sceneNumber]
+    SceneManager["gravity"] = currentScene["gravity"]
     currentImage = love.graphics.newImage(currentScene["image"])
     love.window.setMode(currentScene["width"], currentScene["height"])
   end

@@ -5,6 +5,7 @@ local cave = {}
 
 cave["height"] = 800
 cave["width"] = 1200
+cave["gravity"] = 120*32
 
 cave["image"] = "cenarios/Scene3.png"
 
