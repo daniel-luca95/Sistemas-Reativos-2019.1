@@ -1,0 +1,38 @@
+* Objetivo
+
+O jogador deve percorrer os cenários enfrentando monstros para salvar seu interesse amoroso.
+
+* Pré-jogo
+Assim que o jogo carrega o player escolhe se o seu personagem é o herói ou a heroína.
+- Deve aparecer uma mensagem "Pick your Avatar" com os sprites de cada abaixo. O player deve clicar sobre o personagem escolhido.
+
+Em seguida o player deve escolher se deseja salvar o príncipe ou a princesa.
+- Deve aparecer uma mensagem "Who's the only heir to the kingdom?" com as sprites do príncipe "Prince Peter" e da princesa "Princess Kate" abaixo. O player deve clicar sobre o personagem escolhido.
+
+* Jogo
+O personagem deve aparecer já na primeira fase. Quando os seguintes diálogos devem aparecer, nesta ordem:
+"Oh no, Prince Peter/Princess Kate has been taken hostage by a violent dragon!"
+"The Queen has offered a great reward for whoever brings her son/daughter back!"
+"Many have tried and failed, you might be the only one who's strong enough to do it!"
+Os diálogos devem sumir conforme o jogador pressiona a tecla de espaço. A dica "press space" deve aparecer no centro inferior da tela.
+
+Na primeira fase o jogador deve apenas andar pelo cenário em direção à saída, sinalizada por uma seta no próprio cenário.
+
+Na segunda fase o jogador deve atravessar uma fase na qual se encotram três trolls. Os trolls devem se mover em direção a ele e atacá-lo caso ele esteja muito próximo deles.
+
+Na terceira e última fase o jogador entra na caverna e encontra o dragão ao centro. O dragão o ataca no momento que ele atravessa a entrada. O príncipe / a princesa se encontra numa jaula pendurada no teto.
+
+Ao matar o dragão o jogo se encerra.
+
+- Deve aparecer o tempo todo um menu com as opções de "Pause/Resume", "Close", "Instructions"
+- O personagem possui uma espada com que ele pode atacar. Seu ataque atinge apenas quem estiver de frente para ele.
+- Os trolls são capazes de dar socos que atingem quem está de frente para eles.
+- O dragão cospe fogo.
+
+* Pós jogo
+Fora da caverna o personagem e o príncipe/a princesa aparecem. Os seguintes diálogos devem aparecer, nesta ordem:
+"Thank you so much for saving me."
+"I'm the only heir to the throne and sometimes I wonder if I will be able to protect it."
+"If I had such a strong person like you beside me I wouldn't have to worry about that."
+"Will you marry me?"
+Então 
