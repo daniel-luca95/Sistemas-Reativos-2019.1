@@ -3,14 +3,18 @@ local SceneManager = {}
 
 -------------------------------------------------------------------
 
+-- Recebe uma posição (px, py)
+-- "line" é uma tabela {a, b, -d} tal que a*x + b*y = d é a equação de uma reta e (a, b) a sua normal
+-- Retorna true se o ponto está dentro da região definida (oposto à normal)
 -- Receives a position described by (px, py). 
--- LineTable is {a, b, -d} where a*x + b*y = d is the line equation
--- Returns true if the point provided is not in the region defined by the line
-local function isOutOfRegion(px, py, line)
-  return px*line[1] + py*line[2] + line[3] >= 0
+-- line is a table {a, b, -d} where a*x + b*y = d is the line equation and (a, b) is its normal
+-- Returns true if the point provided is in the region defined by the line
+local function isInRegion(px, py, line)
+  return px*line[1] + py*line[2] + line[3] < 0
 end
 
--- Checa se a reta formada pelos pontos (x0,y0) e (xf,yf) intersectam a linha que define um obstáculo ou um delimite de região
+-- Calcula a interseção entre uma reta definida por dois pontos e uma linha no formato {a, b, -d} com a*x + b*y = d
+-- Calculares the intersection between a line defined by two points and a line {a, b, -d} where a*x + b*y = d
 local function getIntersection(x0, y0, xf, yf, line)
   local n 
   local n_norm
@@ -19,6 +23,7 @@ local function getIntersection(x0, y0, xf, yf, line)
   local x0n, y0n, xfn, yfn
   
   n = {line[1], line[2]}
+  
   n_norm = math.sqrt(n[1]*n[1] + n[2]*n[2])
   n[1] = n[1] /n_norm
   n[2] = n[2] /n_norm
@@ -52,6 +57,8 @@ end
 local currentImage
 local currentScene = 1
 
+-- tabela de fases do jogo
+-- game stages' table
 local scenes = {require "degrau", require "escada", require "cave" }
 
 SceneManager["draw"] = 
@@ -67,12 +74,18 @@ SceneManager["setScene"] =
     love.window.setMode(currentScene["width"], currentScene["height"])
   end
   
- --Basicamente, essa função retorna se é possível se mover no cenário, ou seja, primeiro vê se o caminho de onde ele está pra onde ele quer ir tem algum obstáculo entre esses dois pontos, os demais retornos são quanto o boneco pode percorrer para completar o movimento.
- 
+-- recebe um ponto inicial e um ponto final
+-- retorna se o movimento foi completo e também qual deltaX e qual deltaY foi possível percorrer da trajetória pretendida
+-- receives an initial and a final point
+-- returns whether the movement was complete and the offset 
 SceneManager["canMove"] = 
   function (x0, y0, xf, yf)
+    -- cada cena possui diversas barreiras
+    -- each scene defines multiple constraints
     for index, constraint in ipairs(currentScene["constraints"]) do
-      if (isOutOfRegion(x0, y0, constraint["equation"])) and (not isOutOfRegion( xf, yf, constraint["equation"])) then
+      -- é preciso checar se o personagem está tentando atravessar cada região
+      -- we must check if the character intends to cross any constraint
+      if not isInRegion(x0, y0, constraint["equation"]) and isInRegion( xf, yf, constraint["equation"]) then
         x, y = getIntersection(x0, y0, xf, yf, constraint["equation"])
         if constraint["domain"](x, y) then
           return false, x - x0, y - y0

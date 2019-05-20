@@ -1,6 +1,6 @@
--- Aqui setamos todas as propriedades do cenário da primeira fase
 local stair= {}
 
+-- Primeiramente são definidas as dimensões da cena e a imagem de fundo
 -- First up: scene dimensions and background image
 
 stair["height"] = 800
@@ -9,7 +9,9 @@ stair["gravity"] = 120*32
 
 stair["image"] = "cenarios/Scene1.png"
 
+-- As constraints são as retas que delimitam os objetos da cena
 -- After that we define the solid constraints
+-- Retas estão no formato / the lines are defined as : {a, b, -d}, a*x + b*y = d
 
 local constraints = {}
 constraints[1] = { ["domain"] = function (x,y) return true end, ["equation"] = {0, -1, 732} } -- Chão

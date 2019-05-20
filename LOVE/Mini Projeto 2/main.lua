@@ -1,7 +1,7 @@
 local sceneManager = require "sceneManager"
 local characterPackage = require "character"
-local HeroPackage = require "hero"
-local DragonPackage = require "dragon"
+local attackerPackage = require "physicalAttacker"
+local dragonPackage = require "dragon"
 local menu = require "menu"
 local resumeMenu = require "resumeMenu"
 local chooseMenu = require "chooseMenu"
@@ -11,7 +11,7 @@ function loadSecondPhase()
   blockKeyReleaseOnce = true
   sceneManager.setScene(2)
   prisoner = nil
-  hero = HeroPackage.newHero(chooseMenu.imageHero, 20, 200) --inicia herói com um sprite e posição inicial
+  hero = attackerPackage.newAttacker(chooseMenu.imageHero, 20, 600, 30, 5) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
   hero.setDeathEvent(
     function ()
@@ -23,7 +23,7 @@ function loadSecondPhase()
   enemies = {}
   for index, position in pairs(initialPositions) do
     local enemy
-    enemy = HeroPackage.newHero("enemies/trollcorrected.png", position[1], position[2])
+    enemy = attackerPackage.newAttacker("enemies/trollcorrected.png", position[1], position[2], 40, 8)
     enemies[enemy] = true
     enemy.setDeathEvent( 
       function () 
@@ -43,7 +43,7 @@ function loadThirdPhase()
   sceneManager.setScene(3)
   prisoner = characterPackage.newCharacter(chooseMenu["imagePrisoner"], 613, 100, 22)
   prisoner.setScene(sceneManager)
-  hero = HeroPackage.newHero(chooseMenu.imageHero, 20, 200) --inicia herói com um sprite e posição inicial
+  hero = attackerPackage.newAttacker(chooseMenu.imageHero, 20, 200, 30, 5) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
   hero.setDeathEvent( 
     function ()
@@ -52,7 +52,7 @@ function loadThirdPhase()
     end
   )
   local enemy
-  enemy = DragonPackage.newDragon("enemies/dragoncorrected.png", 600, 500)
+  enemy = dragonPackage.newDragon("enemies/dragoncorrected.png", 600, 500, 30)
   enemy.setScene(sceneManager)
   enemy.setDeathEvent(
     function ()
@@ -118,7 +118,7 @@ function love.load()
   enemies = {}
   prisoner = nil 
   sceneManager.setScene(1) 
-  hero = HeroPackage.newHero("hero/herocorrected.png", 20, 200) --inicia herói com um sprite e posição inicial
+  hero = attackerPackage.newAttacker("hero/herocorrected.png", 20, 200, 30, 5 ) --inicia herói com um sprite e posição inicial
   hero.setScene(sceneManager) --Seta a cena em que o heroi está no jogo
   local update
   update = hero["update"]

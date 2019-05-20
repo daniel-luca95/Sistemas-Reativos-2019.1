@@ -1,6 +1,13 @@
 local Dragon
 Dragon = {}
 
+-------------------------------------------------------------------
+-- Um dragão é capaz de inflingir dano à distância
+-- A dragon may inflict damage from afar
+
+local Character
+Character = require "character"
+
 Dragon["newDragon"] = 
   function (sprite, x, y)
     local troll    

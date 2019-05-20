@@ -3,6 +3,8 @@
 
 local characterPackage = {}
 
+-------------------------------------------------------------------
+
 characterPackage["setImage"] =
 function (sprite)
   print(sprite)

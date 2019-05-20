@@ -1,6 +1,7 @@
 
 local cave = {}
 
+-- Primeiramente são definidas as dimensões da cena e a imagem de fundo
 -- First up: scene dimensions and background image
 
 cave["height"] = 800
@@ -9,9 +10,12 @@ cave["gravity"] = 120*32
 
 cave["image"] = "cenarios/Scene3.png"
 
--- After that we define the solid constraints
 -- As constraints são as retas que delimitam os objetos da cena
+-- After that we define the solid constraints
+-- Retas estão no formato / the lines are defined as : {a, b, -d}, a*x + b*y = d
+
 local constraints = {}
+
 constraints[1] = { ["domain"] = function (x,y) return true end, ["equation"] = {1, 0, 0} } -- borda de entrada
 constraints[2] = { ["domain"] = function (x,y) return true end, ["equation"] = {-1, 0, 1200} }
 constraints[3] = { ["domain"] = function (x,y) return x < 170 end, ["equation"] = {0, -1, 498}  }
