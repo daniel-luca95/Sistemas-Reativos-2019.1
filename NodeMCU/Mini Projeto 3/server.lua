@@ -2,13 +2,16 @@ local led1 = 3
 local led2 = 6
 local sw1 = 1
 local sw2 = 2
-local ledState = false
 local correctPassword= {}
 local seqentrada = {true,false,false,}
 tolerance = 250000
 
 gpio.mode(led1, gpio.OUTPUT)
+gpio.mode(led2, gpio.OUTPUT)
+gpio.mode(sw1,gpio.PULLUP)
+gpio.mode(sw2,gpio.PULLUP)
 gpio.write(led1, gpio.LOW);
+gpio.write(led2, gpio.LOW);
 
 local IP
 
@@ -22,9 +25,9 @@ local function exibeResultado()
         end
     end
     if equal then
-        gpio.write(led2, gpio.HIGH)
+        return true
     else
-        gpio.write(led1, gpio.HIGH)
+        return false
     end
     gpio.trig(sw1)
     gpio.trig(sw2)
@@ -58,7 +61,7 @@ function connect_to_()
       -- callback em caso de sucesso  
       function(client) 
         
-            m:subscribe("cecinestpasunchannel",0,  
+            m:subscribe("Authentication",0,  
                    -- fÃ§ chamada qdo inscriÃ§Ã£o ok:
                    function (client) 
                      print("subscribe success") 
@@ -71,39 +74,30 @@ function connect_to_()
                   print(topic .. ":" )   
                   if data ~= nil then 
                     if data == "Someone got in" then
+                        print("Password")
                         answer = askForPassword();
-                        if(answer)
+                        if(answer) then
                             gpio.write(led1, gpio.HIGH)
+                            publish("Athorized")
 						else
 							gpio.write(led2, gpio.HIGH)
+                            publish(string)
+                            publish("Denied")
                         end
                             
                     end
                   end
                 end
             )
-
-            gpio.mode(sw1,gpio.INT,gpio.PULLUP)
-            tolerance = 250000
-            last = 0
             
-            function publish(level, timestamp)
+            function publish(string)
                 print("Am I gonna publish?")
-                if timestamp - last > tolerance then
-                    print("Sending")
-                    m:publish(
-                        "cecinestpasunchannel", "ceci n est pas une message",
-                        0, 0, function (c) print ("enviou!") end
-                    )
-                end
-                last = timestamp
+                print("Sending")
+                m:publish(
+                    "Detection",string,
+                    0, 0, function (c) print ("enviou!") end
+                )
             end
-            
-            gpio.trig(sw1, "down", publish)
-
-
-
-            
       end, 
       -- callback em caso de falha 
       function(client, reason) 
