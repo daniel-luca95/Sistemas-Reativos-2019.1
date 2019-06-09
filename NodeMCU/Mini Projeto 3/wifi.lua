@@ -1,7 +1,7 @@
 local wifi
 wifi = {}
 
-wifi["ssid"] = "iPhone de Bianca"
-wifi["pwd"] = "biancalinda"
+wifi["ssid"] = "REDE MDF"
+wifi["pwd"] = "e09f5bb2bb"
 
 return wifi
