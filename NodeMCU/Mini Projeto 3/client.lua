@@ -1,56 +1,96 @@
-local function Generate_ID(IP)
-    return "prefixo_qualquer_"..IP
-end
+local green_led, red_led, sensor
+red_led = 3
+green_led = 6
+sensor = 0
 
-local function Generate_Exclusive_Channel_Name(IP)
-    return "exclusive_channel_"..IP
-end
 
-local Subscription_Channel = "subscription_channel"
+gpio.mode(red_led, gpio.OUTPUT)
+gpio.mode(green_led, gpio.OUTPUT)
+gpio.write(red_led, gpio.LOW);
+gpio.write(green_led, gpio.LOW);
+
 
 -- ConfigurationLoads file with ssid key and password
-netword_settings = require "wifi"
+local netword_settings
+netword_settings = require "network_settings"
 
 local IP
+local waiting_validation
 
 local function monitor()
-
+    local step, sum
+    step = 0
+    sum = 0
+    while true do
+        --- logic to monitor 
+        value = adc.read(sensor)
+        step = step + 1
+        sum = sum + value
+        if step == 1000 then
+            print("Medium value:", value/step)
+            if value/step > 500 then
+                detected()
+            end
+            step = 0
+        end
+    end
 end
 
 
-local function detect()
 
+local function detected()
+    print("Someone was detected")
+    m:publish(
+        netword_settings.Authentication_Exclusive_Channel(IP), "Someone got in", 0, 0,
+        function ()
+            waiting_validation = true
+        end
+    )
 end
 
 
 local function fire_alarm()
-
+    
 end
 
 
 local function connect()
-    m = mqtt.Client(Generate_ID(IP), 120)
+    m = mqtt.Client(netword_settings.Generate_ID(IP), 120)
     m:publish()
     
     local function failure_callback (client, reason)
-        print("Not possible to connect client "..client.."for reason "..reason)
+        print("Not possible to connect client "..client.." for reason "..reason..".")
     end
+    
     local function success_callback()
-        m:subscribe(Generate_Exclusive_Channel_Name(IP), 0,
+        m:subscribe(netword_settings.Report_Exclusive_Channel(IP), 0,
                 function ()
                     print("Subscription success")
                 end
         )
 
-        m:publish(Subscription_Channel, IP, 0, 0,
+        m:publish(netword_settings.Subscription_Channel, IP, 0, 0,
             function () 
-                print("Subscription ")
+                print("Subscription done.")
             end        
+        )
+
+        m:on("message", 
+            function (client, topic, data)
+                if waiting_validation then
+                    if data == "Authorized" then
+
+                    elseif data == "Denied" then
+                        fire_alarm()
+                    end
+                    waiting_validation = false
+                --else publish error report
+                end
+            end
         )
 
         monitor()
     end
-    
 
     m:connect("85.119.83.194", 1883, 0, sucess_callback, failure_callback)
 end
