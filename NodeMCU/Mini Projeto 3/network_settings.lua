@@ -9,10 +9,16 @@ network_settings["Generate_ID"] =
         return "prefixo_qualquer_"..IP
     end
 
-network_settings["Exclusive_Channel_Name"] =
+network_settings["Report_Exclusive_Channel"] =
     function (IP)
-        return "exclusive_channel_"..IP
+        return "report_channel_"..IP
     end
+
+network_settings["Authentication_Exclusive_Channel"]
+    function (IP)
+        return "authentication_channel_"..IP
+    end
+
 
 network_settings["Subscription_Channel"] = "subscription_channel"
 
