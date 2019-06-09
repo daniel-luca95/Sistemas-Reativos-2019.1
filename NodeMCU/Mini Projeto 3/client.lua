@@ -1,14 +1,5 @@
-local function Generate_ID(IP)
-    return "prefixo_qualquer_"..IP
-end
-
-local function Generate_Exclusive_Channel_Name(IP)
-    return "exclusive_channel_"..IP
-end
-
-local Subscription_Channel = "subscription_channel"
-
 -- ConfigurationLoads file with ssid key and password
+local netword_settings
 netword_settings = require "wifi"
 
 local IP
@@ -18,8 +9,16 @@ local function monitor()
 end
 
 
-local function detect()
+local function detected()
+    m:publish(
+        netword_settings.Exclusive_Channel_Name(IP), "Someone got in", 0, 0,
+        function ()
+            print("Alarm fired")
 
+            
+                 
+        end
+    )
 end
 
 
@@ -29,28 +28,28 @@ end
 
 
 local function connect()
-    m = mqtt.Client(Generate_ID(IP), 120)
+    m = mqtt.Client(netword_settings.Generate_ID(IP), 120)
     m:publish()
     
     local function failure_callback (client, reason)
         print("Not possible to connect client "..client.."for reason "..reason)
     end
+    
     local function success_callback()
-        m:subscribe(Generate_Exclusive_Channel_Name(IP), 0,
+        m:subscribe(netword_settings.Exclusive_Channel_Name(IP), 0,
                 function ()
                     print("Subscription success")
                 end
         )
 
-        m:publish(Subscription_Channel, IP, 0, 0,
+        m:publish(netword_settings.Subscription_Channel, IP, 0, 0,
             function () 
-                print("Subscription ")
+                print("Subscription done.")
             end        
         )
 
         monitor()
     end
-    
 
     m:connect("85.119.83.194", 1883, 0, sucess_callback, failure_callback)
 end
