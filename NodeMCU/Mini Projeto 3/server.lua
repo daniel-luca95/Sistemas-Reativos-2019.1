@@ -1,21 +1,23 @@
-local led1 = 3
-local led2 = 6
+local ledVermelho = 3
+local ledVerde = 6
 local sw1 = 1
 local sw2 = 2
-local correctPassword= {}
-local seqentrada = {true,false,false,}
-tolerance = 250000
+local correctPassword= {true,false,false,true,true}
+local seqentrada = {}
+local tolerance = 250000
+local accept = nil
 
-gpio.mode(led1, gpio.OUTPUT)
-gpio.mode(led2, gpio.OUTPUT)
-gpio.mode(sw1,gpio.PULLUP)
-gpio.mode(sw2,gpio.PULLUP)
-gpio.write(led1, gpio.LOW);
-gpio.write(led2, gpio.LOW);
+--Inicializando LEDs e botões
+gpio.mode(ledVermelho, gpio.OUTPUT)
+gpio.mode(ledVerde, gpio.OUTPUT)
+gpio.mode(sw1,gpio.INT,gpio.PULLUP)
+gpio.mode(sw2,gpio.INT,gpio.PULLUP)
+gpio.write(ledVermelho, gpio.LOW);
+gpio.write(ledVerde, gpio.LOW);
 
 local IP
 
-local function exibeResultado()
+local function contabilizaResultado()
     local equal
     equal = true
     for indice, entrada in pairs(seqentrada) do
@@ -25,37 +27,55 @@ local function exibeResultado()
         end
     end
     if equal then
-        return true
+        print("Acertou a senha")
+        gpio.write(ledVerde, gpio.HIGH)
+        publish("Athorized")
     else
-        return false
+        print("Nao acertou a senha")
+        gpio.write(ledVermelho, gpio.HIGH)
+        publish("Denied")
     end
-    gpio.trig(sw1)
-    gpio.trig(sw2)
+    seqentrada = {}
 end
 
 function askForPassword()
 	local function registerButton(button)
+        local digit
 		local ultimoAperto
 		ultimoAperto = 0
 		gpio.trig(button, "down",   function (level, timestamp)
 										if timestamp > ultimoAperto + tolerance  then
 											ultimoAperto = timestamp
-											print(button)
-											seqentrada[#seqentrada+1] = button
+                                           if button == 1 then
+                                                print(1)
+                                                digit = true
+                                           else
+                                                print(0)
+                                                digit = false
+                                           end
+											seqentrada[#seqentrada+1] = digit
 											if #seqentrada == 5 then
-												exibeResultado()
+												contabilizaResultado()
+                                                
 											end
 										end
 									end
 		)
 	end
-  registerButton(sw1)
-  registerButton(sw2)
+  registerButton(1)
+  registerButton(2)
 	
 end 
-	
+function publish(string)
+    print("Am I gonna publish?")
+    print("Sending")
+    m:publish(
+    "Detection",string,
+    0, 0, function (c) print ("enviou!") end
+    )
+end
 function connect_to_()
-    m = mqtt.Client("prefixo_qualquer_"..IP, 120)
+    m = mqtt.Client("Servidor"..IP, 120)
     -- conecta com servidor mqtt na mÃ¡quina 'ipbroker' e porta 1883:
     m:connect("85.119.83.194", 1883, 0,
       -- callback em caso de sucesso  
@@ -75,29 +95,13 @@ function connect_to_()
                   if data ~= nil then 
                     if data == "Someone got in" then
                         print("Password")
-                        answer = askForPassword();
-                        if(answer) then
-                            gpio.write(led1, gpio.HIGH)
-                            publish("Athorized")
-						else
-							gpio.write(led2, gpio.HIGH)
-                            publish(string)
-                            publish("Denied")
-                        end
+                        askForPassword();
                             
                     end
                   end
                 end
             )
             
-            function publish(string)
-                print("Am I gonna publish?")
-                print("Sending")
-                m:publish(
-                    "Detection",string,
-                    0, 0, function (c) print ("enviou!") end
-                )
-            end
       end, 
       -- callback em caso de falha 
       function(client, reason) 
@@ -108,8 +112,8 @@ end
 
 wificonf = {  
   -- verificar ssid e senha  
-  ssid = "iPhone de Bianca",  
-  pwd = "biancalinda",  
+  ssid = "MDF",  
+  pwd = "e09f5bb2bb",  
   got_ip_cb = function (con)
                 IP = con.IP
                 print ("meu IP: ", con.IP)
