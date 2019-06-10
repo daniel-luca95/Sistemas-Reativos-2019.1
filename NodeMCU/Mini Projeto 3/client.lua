@@ -9,59 +9,55 @@ gpio.mode(green_led, gpio.OUTPUT)
 gpio.write(red_led, gpio.LOW);
 gpio.write(green_led, gpio.LOW);
 
+local monitoring_timer
 
 -- ConfigurationLoads file with ssid key and password
-local netword_settings
-netword_settings = require "network_settings"
+local network_settings
+network_settings = require "network_settings"
 
 local IP
 local waiting_validation
-local unlocked
-unlocked = true
-
-local function monitor()
-    print("Monitoring")
-    local step, sum
-    step = 0
-    sum = 0
-    while unlocked do
-        --- logic to monitor 
-        value = adc.read(sensor)
-        step = step + 1
-        sum = sum + value
-        if step == 1000 then
-            print("Medium value:", value/step)
-            if value/step > 500 then
-                detected()
-            end
-            step = 0
-        end
-    end
-end
-
 
 
 local function detected()
     print("Someone was detected")
     m:publish(
-        netword_settings.Report_Exclusive_Channel(IP), "Someone got in", 0, 0,
+        network_settings.Report_Exclusive_Channel(IP), "Someone got in", 0, 0,
         function (client)
-            waiting_validation = true
+            print("Report sent to "..network_settings.Report_Exclusive_Channel(IP))
         end
     )
+end
+
+
+local step, sum
+step = 0
+sum = 0
+
+local function monitor()
+    --- logic to monitor 
+    value = adc.read(sensor)
+    step = step + 1
+    sum = sum + value
+    if step == 10 then
+        if sum/step < 500 then
+            detected()
+        end
+        sum = 0
+        step = 0
+    end
 end
 
 
 local function fire_alarm()
     print("Alarm fired!")
     gpio.write(red_led, gpio.HIGH)
-    unlocked = false
 end
 
 
 local function connect()
-    print("Client Name: "..netword_settings.Generate_ID(IP))
-    m = mqtt.Client(netword_settings.Generate_ID(IP), 120)
+    print("Client Name: "..network_settings.Generate_ID(IP))
+    m = mqtt.Client(network_settings.Generate_ID(IP), 120)
     print("Connecting...")
     
     local function failure_callback (client, reason)
@@ -70,23 +66,29 @@ local function connect()
     
     local function success_callback(client)
         print("Connected succesfully")
-        m:subscribe(netword_settings.Authentication_Exclusive_Channel(IP), 0,
+        m:subscribe(network_settings.Authentication_Exclusive_Channel(IP), 0,
                 function (client)
-                    print("Subscription success")
+                    print("Listening to "..network_settings.Authentication_Exclusive_Channel(IP))
                 end
         )
 
-        m:publish(netword_settings.Subscription_Channel, IP, 0, 0,
+        m:publish(network_settings.Subscription_Channel, IP, 0, 0,
             function (client) 
-                print("Subscription done.")
+                print("Server notified.")
+                monitoring_timer = tmr.create()
+                if not monitoring_timer then
+                    print("Error creating timer.")
+                end
+                monitoring_timer:alarm(50, tmr.ALARM_AUTO, monitor)
             end        
         )
 
         m:on("message", 
             function (client, topic, data)
+                --if topic == ""
                 if waiting_validation then
                     if data == "Authorized" then
-
+                        print("Person authorized")
                     elseif data == "Denied" then
                         fire_alarm()
                     end
@@ -96,7 +98,6 @@ local function connect()
             end
         )
 
-        monitor()
     end
 
     m:connect("85.119.83.194", 1883, 0, success_callback, failure_callback)
@@ -105,8 +106,8 @@ end
 
 wificonf = {  
   -- verificar ssid e senha  
-  ssid = netword_settings.ssid,  
-  pwd = netword_settings.pwd,  
+  ssid = network_settings.ssid,  
+  pwd = network_settings.pwd,  
   got_ip_cb = function (con)
                 IP = con.IP
                 print ("meu IP: ", IP)
@@ -116,7 +117,9 @@ wificonf = {
 }
 
 
-print("ssid", netword_settings.ssid, "pwd", netword_settings.pwd)
+print("ssid", network_settings.ssid, "pwd", network_settings.pwd)
 
 wifi.setmode(wifi.STATION)
 wifi.sta.config(wificonf)
+
+
