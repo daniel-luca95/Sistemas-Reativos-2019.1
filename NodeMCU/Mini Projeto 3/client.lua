@@ -16,12 +16,15 @@ netword_settings = require "network_settings"
 
 local IP
 local waiting_validation
+local unlocked
+unlocked = true
 
 local function monitor()
+    print("Monitoring")
     local step, sum
     step = 0
     sum = 0
-    while true do
+    while unlocked do
         --- logic to monitor 
         value = adc.read(sensor)
         step = step + 1
@@ -41,8 +44,8 @@ end
 local function detected()
     print("Someone was detected")
     m:publish(
-        netword_settings.Authentication_Exclusive_Channel(IP), "Someone got in", 0, 0,
-        function ()
+        netword_settings.Report_Exclusive_Channel(IP), "Someone got in", 0, 0,
+        function (client)
             waiting_validation = true
         end
     )
@@ -50,27 +53,31 @@ end
 
 
 local function fire_alarm()
-    
+    print("Alarm fired!")
+    gpio.write(red_led, gpio.HIGH)
+    unlocked = false
 end
 
 
 local function connect()
+    print("Client Name: "..netword_settings.Generate_ID(IP))
     m = mqtt.Client(netword_settings.Generate_ID(IP), 120)
-    m:publish()
+    print("Connecting...")
     
     local function failure_callback (client, reason)
-        print("Not possible to connect client "..client.." for reason "..reason..".")
+        print("Not possible to connect for reason "..reason..".")
     end
     
-    local function success_callback()
-        m:subscribe(netword_settings.Report_Exclusive_Channel(IP), 0,
-                function ()
+    local function success_callback(client)
+        print("Connected succesfully")
+        m:subscribe(netword_settings.Authentication_Exclusive_Channel(IP), 0,
+                function (client)
                     print("Subscription success")
                 end
         )
 
         m:publish(netword_settings.Subscription_Channel, IP, 0, 0,
-            function () 
+            function (client) 
                 print("Subscription done.")
             end        
         )
@@ -108,6 +115,8 @@ wificonf = {
   save = false
 }
 
+
+print("ssid", netword_settings.ssid, "pwd", netword_settings.pwd)
 
 wifi.setmode(wifi.STATION)
 wifi.sta.config(wificonf)
