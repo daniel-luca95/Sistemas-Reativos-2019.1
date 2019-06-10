@@ -99,7 +99,7 @@ local function connect()
         monitor()
     end
 
-    m:connect("85.119.83.194", 1883, 0, sucess_callback, failure_callback)
+    m:connect("85.119.83.194", 1883, 0, success_callback, failure_callback)
 end
 
 
