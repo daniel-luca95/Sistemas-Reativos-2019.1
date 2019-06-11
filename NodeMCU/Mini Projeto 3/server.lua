@@ -5,7 +5,6 @@ local sw2 = 2
 local correctPassword= {true,false,false,true,true}
 local seqentrada = {}
 local tolerance = 250000
-local accept = nil
 
 --Inicializando LEDs e botões
 gpio.mode(ledVermelho, gpio.OUTPUT)
@@ -34,8 +33,10 @@ local function contabilizaResultado()
         print("Nao acertou a senha")
         gpio.write(ledVermelho, gpio.HIGH)
         publish("Denied")
+		gpio.trig(sw1)
+		gpio.trig(sw2)
     end
-    seqentrada = {}
+	seqentrada = {}
 end
 
 function askForPassword()
@@ -96,6 +97,8 @@ function connect_to_()
                     if data == "Someone got in" then
                         print("Password")
                         askForPassword();
+						gpio.write(ledVermelho, gpio.LOW);
+						gpio.write(ledVerde, gpio.LOW);
                             
                     end
                   end
@@ -112,7 +115,7 @@ end
 
 wificonf = {  
   -- verificar ssid e senha  
-  ssid = "MDF",  
+  ssid = "MDF QP",  
   pwd = "e09f5bb2bb",  
   got_ip_cb = function (con)
                 IP = con.IP
