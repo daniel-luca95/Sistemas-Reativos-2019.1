@@ -22,7 +22,6 @@ local function blink()
     state = not state
 end
 
-
 led_manager["suspend_activities"] =
     function ()
         timer = tmr.create()

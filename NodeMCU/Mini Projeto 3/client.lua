@@ -16,14 +16,13 @@ local function detected()
     print("Someone was detected")
     waiting_validation = true
     m:publish(
-        network_settings.Report_Exclusive_Channel(IP), "Someone got in", 0, 0,
+        "Authentication", "Someone got in", 0, 0,
         function (client)
-            print("Report sent to "..network_settings.Report_Exclusive_Channel(IP))
+            print("Report sent to ".."Authentication")
         end
     )
     led_manager.suspend_activities()
 end
-
 
 local step, sum
 step = 0
@@ -51,7 +50,6 @@ local function fire_alarm()
     led_manager.lock_station()
 end
 
-
 local function connect()
     print("Client Name: "..network_settings.Generate_ID(IP))
     m = mqtt.Client(network_settings.Generate_ID(IP), 120)
@@ -63,27 +61,27 @@ local function connect()
     
     local function success_callback(client)
         print("Connected succesfully")
-        m:subscribe(network_settings.Authentication_Exclusive_Channel(IP), 0,
+        m:subscribe("Detection", 0,
                 function (client)
-                    print("Listening to "..network_settings.Authentication_Exclusive_Channel(IP))
+                    print("Listening to ".."Detection")
                 end
         )
-
-        m:publish(network_settings.Subscription_Channel, IP, 0, 0,
-            function (client) 
-                print("Server notified.")
+        
+--        m:publish(network_settings.Subscription_Channel, IP, 0, 0,
+--            function (client) 
+--                print("Server notified.")
                 monitoring_timer = tmr.create()
                 if not monitoring_timer then
                     print("Error creating timer.")
                 end
                 monitoring_timer:alarm(50, tmr.ALARM_AUTO, monitor)
-            end        
-        )
+--            end        
+--        )
 
         m:on("message", 
             function (client, topic, data)
                 if waiting_validation then
-                    if data == "Authorized" then
+                    if data == "Athorized" then
                         print("Person authorized")
                         led_manager.free_station()
                         waiting_validation = false
