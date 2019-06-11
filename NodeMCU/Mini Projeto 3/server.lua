@@ -5,7 +5,7 @@ local sw2 = 2
 local correctPassword= {true,false,false,true,true}
 local seqentrada = {}
 local tolerance = 250000
-
+local accept = true
 --Inicializando LEDs e botões
 gpio.mode(ledVermelho, gpio.OUTPUT)
 gpio.mode(ledVerde, gpio.OUTPUT)
@@ -28,14 +28,15 @@ local function contabilizaResultado()
     if equal then
         print("Correct password provided")
         gpio.write(ledVerde, gpio.HIGH)
-        publish("Athorized")
+        publish("Authorized")
     else
         print("Incorrect password provided.")
         gpio.write(ledVermelho, gpio.HIGH)
         publish("Denied")
-		gpio.trig(sw1)
-		gpio.trig(sw2)
+		accept = false
     end
+	gpio.trig(sw1)
+	gpio.trig(sw2)
 	seqentrada = {}
 end
 
@@ -69,7 +70,7 @@ end
 function publish(string)
     print("Publishing answer "..string)
     m:publish(
-    "Detection",string,
+    "Authentication",string,
     0, 0, function (c) print ("Answer \""..string.."\" published.") end
     )
 end
@@ -77,32 +78,30 @@ function connect_to_()
     m = mqtt.Client("Servidor"..IP, 120)
     -- conecta com servidor mqtt na mÃ¡quina 'ipbroker' e porta 1883:
     m:connect("85.119.83.194", 1883, 0,
-      -- callback em caso de sucesso  
+      -- callback em caso de sucesso 
       function(client) 
-        
-            m:subscribe("Authentication",0,  
+            m:subscribe("Detection",0,  
                    -- fÃ§ chamada qdo inscriÃ§Ã£o ok:
                    function (client) 
                      print("Succesfully listening to client.") 
                    end
                    )
 
-
             m:on("message", 
                 function(client, topic, data)   
                   print(topic .. ":" )   
                   if data ~= nil then 
                     if data == "Someone got in" then
+					if accept then
                         print("Please provide password:")
                         askForPassword();
 						gpio.write(ledVermelho, gpio.LOW);
 						gpio.write(ledVerde, gpio.LOW);
-                            
+                    end
                     end
                   end
                 end
             )
-            
       end, 
       -- callback em caso de falha 
       function(client, reason) 
