@@ -1,3 +1,5 @@
+
+
 wificonf = {  
   -- verificar ssid e senha  
   ssid = "iPhone de Bianca",  
