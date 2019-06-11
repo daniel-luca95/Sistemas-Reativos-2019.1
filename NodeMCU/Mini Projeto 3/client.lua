@@ -5,7 +5,7 @@ led_manager = require "client_led_manager"
 local network_settings
 network_settings = require "network_settings"
 
--- 
+
 local monitoring_timer
 local IP
 local waiting_validation
@@ -17,9 +17,9 @@ local function detected()
     print("Someone was detected")
     waiting_validation = true
     m:publish(
-        "Authentication", "Someone got in", 0, 0,
+        "Detection", "Someone got in", 0, 0,
         function (client)
-            print("Report sent to ".."Authentication")
+            print("Report sent to ".."Detection")
         end
     )
     led_manager.suspend_activities()
@@ -67,9 +67,9 @@ local function connect()
 	
         print("Connected succesfully")
 		-- Channel in which Server answers
-        m:subscribe("Detection", 0,
+        m:subscribe("Authentication", 0,
                 function (client)
-                    print("Listening to Detection")
+                    print("Listening to Authentication")
                 end
         )
         
@@ -77,7 +77,7 @@ local function connect()
         m:on("message", 
             function (client, topic, data)
                 if waiting_validation then
-                    if data == "Athorized" then
+                    if data == "Authorized" then
                         print("Person authorized")
                         led_manager.free_station()
                         waiting_validation = false
@@ -94,7 +94,6 @@ local function connect()
 			print("Error creating timer.")
 		end
 		monitoring_timer:alarm(50, tmr.ALARM_AUTO, monitor)
-
     end
 
     m:connect("85.119.83.194", 1883, 0, success_callback, failure_callback)
