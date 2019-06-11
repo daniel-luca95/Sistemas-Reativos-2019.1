@@ -26,11 +26,11 @@ local function contabilizaResultado()
         end
     end
     if equal then
-        print("Acertou a senha")
+        print("Correct password provided")
         gpio.write(ledVerde, gpio.HIGH)
         publish("Athorized")
     else
-        print("Nao acertou a senha")
+        print("Incorrect password provided.")
         gpio.write(ledVermelho, gpio.HIGH)
         publish("Denied")
 		gpio.trig(sw1)
@@ -47,11 +47,10 @@ function askForPassword()
 		gpio.trig(button, "down",   function (level, timestamp)
 										if timestamp > ultimoAperto + tolerance  then
 											ultimoAperto = timestamp
+											print("*")
                                            if button == 1 then
-                                                print(1)
                                                 digit = true
                                            else
-                                                print(0)
                                                 digit = false
                                            end
 											seqentrada[#seqentrada+1] = digit
@@ -68,11 +67,10 @@ function askForPassword()
 	
 end 
 function publish(string)
-    print("Am I gonna publish?")
-    print("Sending")
+    print("Publishing answer "..string)
     m:publish(
     "Detection",string,
-    0, 0, function (c) print ("enviou!") end
+    0, 0, function (c) print ("Answer \""..string.."\" published.") end
     )
 end
 function connect_to_()
@@ -85,7 +83,7 @@ function connect_to_()
             m:subscribe("Authentication",0,  
                    -- fÃ§ chamada qdo inscriÃ§Ã£o ok:
                    function (client) 
-                     print("subscribe success") 
+                     print("Succesfully listening to client.") 
                    end
                    )
 
@@ -95,7 +93,7 @@ function connect_to_()
                   print(topic .. ":" )   
                   if data ~= nil then 
                     if data == "Someone got in" then
-                        print("Password")
+                        print("Please provide password:")
                         askForPassword();
 						gpio.write(ledVermelho, gpio.LOW);
 						gpio.write(ledVerde, gpio.LOW);
