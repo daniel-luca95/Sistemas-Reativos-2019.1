@@ -1,32 +1,27 @@
-local green_led, red_led, sensor
-red_led = 3
-green_led = 6
+local sensor
 sensor = 0
-
-
-gpio.mode(red_led, gpio.OUTPUT)
-gpio.mode(green_led, gpio.OUTPUT)
-gpio.write(red_led, gpio.LOW);
-gpio.write(green_led, gpio.LOW);
+local led_manager
+led_manager = require "client_led_manager"
 
 local monitoring_timer
 
--- ConfigurationLoads file with ssid key and password
+-- Configuration loads file with ssid key and password
 local network_settings
 network_settings = require "network_settings"
 
 local IP
-local waiting_validation
-
+local waiting_validation    
 
 local function detected()
     print("Someone was detected")
+    waiting_validation = true
     m:publish(
         network_settings.Report_Exclusive_Channel(IP), "Someone got in", 0, 0,
         function (client)
             print("Report sent to "..network_settings.Report_Exclusive_Channel(IP))
         end
     )
+    led_manager.suspend_activities()
 end
 
 
@@ -35,23 +30,25 @@ step = 0
 sum = 0
 
 local function monitor()
-    --- logic to monitor 
-    value = adc.read(sensor)
-    step = step + 1
-    sum = sum + value
-    if step == 10 then
-        if sum/step < 500 then
-            detected()
+    if not waiting_validation then
+        --- logic to monitor 
+        value = adc.read(sensor)
+        step = step + 1
+        sum = sum + value
+        if step == 10 then
+            if sum/step < 500 then
+                detected()
+            end
+            sum = 0
+            step = 0
         end
-        sum = 0
-        step = 0
     end
 end
 
 
 local function fire_alarm()
     print("Alarm fired!")
-    gpio.write(red_led, gpio.HIGH)
+    led_manager.lock_station()
 end
 
 
@@ -85,15 +82,14 @@ local function connect()
 
         m:on("message", 
             function (client, topic, data)
-                --if topic == ""
                 if waiting_validation then
                     if data == "Authorized" then
                         print("Person authorized")
+                        led_manager.free_station()
+                        waiting_validation = false
                     elseif data == "Denied" then
                         fire_alarm()
                     end
-                    waiting_validation = false
-                --else publish error report
                 end
             end
         )
@@ -117,6 +113,7 @@ wificonf = {
 }
 
 
+led_manager.free_station()
 print("ssid", network_settings.ssid, "pwd", network_settings.pwd)
 
 wifi.setmode(wifi.STATION)
