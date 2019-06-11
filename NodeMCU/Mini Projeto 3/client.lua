@@ -1,105 +1,107 @@
-local green_led, red_led, sensor
-red_led = 3
-green_led = 6
+local sensor
 sensor = 0
+local led_manager
+led_manager = require "client_led_manager"
 
+local monitoring_timer
 
-gpio.mode(red_led, gpio.OUTPUT)
-gpio.mode(green_led, gpio.OUTPUT)
-gpio.write(red_led, gpio.LOW);
-gpio.write(green_led, gpio.LOW);
-
-
--- ConfigurationLoads file with ssid key and password
-local netword_settings
-netword_settings = require "network_settings"
+-- Configuration loads file with ssid key and password
+local network_settings
+network_settings = require "network_settings"
 
 local IP
-local waiting_validation
+local waiting_validation    
+
+local function detected()
+    print("Someone was detected")
+    waiting_validation = true
+    m:publish(
+        "Authentication", "Someone got in", 0, 0,
+        function (client)
+            print("Report sent to ".."Authentication")
+        end
+    )
+    led_manager.suspend_activities()
+end
+
+local step, sum
+step = 0
+sum = 0
 
 local function monitor()
-    local step, sum
-    step = 0
-    sum = 0
-    while true do
+    if not waiting_validation then
         --- logic to monitor 
         value = adc.read(sensor)
         step = step + 1
         sum = sum + value
-        if step == 1000 then
-            print("Medium value:", value/step)
-            if value/step > 500 then
+        if step == 10 then
+            if sum/step < 500 then
                 detected()
             end
+            sum = 0
             step = 0
         end
     end
 end
 
 
-
-local function detected()
-    print("Someone was detected")
-    m:publish(
-        netword_settings.Authentication_Exclusive_Channel(IP), "Someone got in", 0, 0,
-        function ()
-            waiting_validation = true
-        end
-    )
-end
-
-
 local function fire_alarm()
-    
+    print("Alarm fired!")
+    led_manager.lock_station()
 end
-
 
 local function connect()
-    m = mqtt.Client(netword_settings.Generate_ID(IP), 120)
-    m:publish()
+    print("Client Name: "..network_settings.Generate_ID(IP))
+    m = mqtt.Client(network_settings.Generate_ID(IP), 120)
+    print("Connecting...")
     
     local function failure_callback (client, reason)
-        print("Not possible to connect client "..client.." for reason "..reason..".")
+        print("Not possible to connect for reason "..reason..".")
     end
     
-    local function success_callback()
-        m:subscribe(netword_settings.Report_Exclusive_Channel(IP), 0,
-                function ()
-                    print("Subscription success")
+    local function success_callback(client)
+        print("Connected succesfully")
+        m:subscribe("Detection", 0,
+                function (client)
+                    print("Listening to ".."Detection")
                 end
         )
-
-        m:publish(netword_settings.Subscription_Channel, IP, 0, 0,
-            function () 
-                print("Subscription done.")
-            end        
-        )
+        
+--        m:publish(network_settings.Subscription_Channel, IP, 0, 0,
+--            function (client) 
+--                print("Server notified.")
+                monitoring_timer = tmr.create()
+                if not monitoring_timer then
+                    print("Error creating timer.")
+                end
+                monitoring_timer:alarm(50, tmr.ALARM_AUTO, monitor)
+--            end        
+--        )
 
         m:on("message", 
             function (client, topic, data)
                 if waiting_validation then
-                    if data == "Authorized" then
-
+                    if data == "Athorized" then
+                        print("Person authorized")
+                        led_manager.free_station()
+                        waiting_validation = false
                     elseif data == "Denied" then
                         fire_alarm()
                     end
-                    waiting_validation = false
-                --else publish error report
                 end
             end
         )
 
-        monitor()
     end
 
-    m:connect("85.119.83.194", 1883, 0, sucess_callback, failure_callback)
+    m:connect("85.119.83.194", 1883, 0, success_callback, failure_callback)
 end
 
 
 wificonf = {  
   -- verificar ssid e senha  
-  ssid = netword_settings.ssid,  
-  pwd = netword_settings.pwd,  
+  ssid = network_settings.ssid,  
+  pwd = network_settings.pwd,  
   got_ip_cb = function (con)
                 IP = con.IP
                 print ("meu IP: ", IP)
@@ -109,5 +111,10 @@ wificonf = {
 }
 
 
+led_manager.free_station()
+print("ssid", network_settings.ssid, "pwd", network_settings.pwd)
+
 wifi.setmode(wifi.STATION)
 wifi.sta.config(wificonf)
+
+
