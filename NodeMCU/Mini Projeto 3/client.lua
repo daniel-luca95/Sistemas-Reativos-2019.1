@@ -1,16 +1,17 @@
-local sensor
-sensor = 0
 local led_manager
 led_manager = require "client_led_manager"
 
-local monitoring_timer
-
--- Configuration loads file with ssid key and password
+-- This file contains network's ssid and password
 local network_settings
 network_settings = require "network_settings"
 
+-- 
+local monitoring_timer
 local IP
-local waiting_validation    
+local waiting_validation
+
+local light_sensor
+light_sensor = 0
 
 local function detected()
     print("Someone was detected")
@@ -28,13 +29,15 @@ local step, sum
 step = 0
 sum = 0
 
+-- Function called repeatedly by monitoring timer
 local function monitor()
     if not waiting_validation then
-        --- logic to monitor 
-        value = adc.read(sensor)
+        --- Light sensor
+        value = adc.read(light_sensor)
         step = step + 1
         sum = sum + value
         if step == 10 then
+			-- Manually calibrated value for high luminosity
             if sum/step < 500 then
                 detected()
             end
@@ -44,15 +47,16 @@ local function monitor()
     end
 end
 
-
 local function fire_alarm()
     print("Alarm fired!")
     led_manager.lock_station()
 end
 
 local function connect()
-    print("Client Name: "..network_settings.Generate_ID(IP))
-    m = mqtt.Client(network_settings.Generate_ID(IP), 120)
+    local client_name
+	client_name = network_settings.Generate_ID(IP)
+    print("Client Name: "..client_name)
+    m = mqtt.Client(client_name, 120)
     print("Connecting...")
     
     local function failure_callback (client, reason)
@@ -60,24 +64,16 @@ local function connect()
     end
     
     local function success_callback(client)
+	
         print("Connected succesfully")
+		-- Channel in which Server answers
         m:subscribe("Detection", 0,
                 function (client)
-                    print("Listening to ".."Detection")
+                    print("Listening to Detection")
                 end
         )
         
---        m:publish(network_settings.Subscription_Channel, IP, 0, 0,
---            function (client) 
---                print("Server notified.")
-                monitoring_timer = tmr.create()
-                if not monitoring_timer then
-                    print("Error creating timer.")
-                end
-                monitoring_timer:alarm(50, tmr.ALARM_AUTO, monitor)
---            end        
---        )
-
+		-- Definition on how to handle the server answers
         m:on("message", 
             function (client, topic, data)
                 if waiting_validation then
@@ -91,6 +87,13 @@ local function connect()
                 end
             end
         )
+		
+		-- Creation of timer that monitors the lgight sensor
+		monitoring_timer = tmr.create()
+		if not monitoring_timer then
+			print("Error creating timer.")
+		end
+		monitoring_timer:alarm(50, tmr.ALARM_AUTO, monitor)
 
     end
 
@@ -116,5 +119,3 @@ print("ssid", network_settings.ssid, "pwd", network_settings.pwd)
 
 wifi.setmode(wifi.STATION)
 wifi.sta.config(wificonf)
-
-
