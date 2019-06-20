@@ -1,38 +1,18 @@
 local mqtt = require("mqtt_library")
-
-function split(s, delimiter)
-    local result = {};
-    for match in (s..delimiter):gmatch("(.-)"..delimiter) do
-        table.insert(result, match);
-    end
-    return result;
-end
+local Task = require "task"
+local Equipment = require "equipment"
 
 -------------------------------------------------------------------------
 
-local function taskManager(equipment, nome, hotPoints)
-  local newTask = {}
-  newTask["equipment"] = equipment
-  newTask["nome"] = nome
-  
-  local function getChannels()
-    local channels = {}
-    channels["started"] = "started__"+nome
-    channels["finished"] = "finished__"+nome
-    channels["progress"] = "progress__"+nome
-    for k, v in ipairs(hotPoints) do
-      channels[k] = "hotpoint__" + nome + "__" + v
+function split(s, delimiter)
+    local result = {}
+    for match in (s..delimiter):gmatch("(.-)"..delimiter) do
+        table.insert(result, match)
     end
-    return channels
-  end
-  
-  newTask["subscribeAll"] =
-    function ()
-      mqtt_client:subscribe(getChannels())
-    end
-  newTask["status"] = "idle"
-  newTask["percentage"] = 0 
+    return result
 end
+
+-------------------------------------------------------------------------
 
 function mqttcb(topic, message)
   local res = split(topic, "__")
@@ -41,20 +21,32 @@ function mqttcb(topic, message)
   tasks[name].status = status
 end
 
+-------------------------------------------------------------------------
+
 function love.load()
-  equipments = {100, 200 , 300}
+  equipments = {}
   tasks = {}
-  tasks["melt_chocolate"] = taskManager( 1, "melt_chocolate", {50})
-  tasks["warm_milk"] = taskManager( 2, "warm_milk", {} )
-  tasks["mix_it_up"] = taskManager( 1, "mix_it_up", {} )
-  tasks["cool_down"] = taskManager( 3, "cool_down", {} )
+  l = love.graphics.getWidth()/10
+  for i=1, 3 do
+    table.insert(equipments, Equipment.new( (3*i-2)*l,love.graphics.getHeight()/2 - 75, 2*l, 150))
+  end
+  
+  local function createTaskRegistry(equipment, taskName, hotPoints)
+    local newTask = Task.new(taskName, hotPoints)
+    newTask["equipment"] = equipment
+    return newTask
+  end
+  
+  tasks["melt_chocolate"] = createTaskRegistry( 1, "melt_chocolate", {50})
+  tasks["warm_milk"] = createTaskRegistry( 2, "warm_milk", {} )
+  tasks["mix_it_up"] = createTaskRegistry( 1, "mix_it_up", {} )
+  tasks["cool_down"] = createTaskRegistry( 3, "cool_down", {} )
+  
 end
 
 function love.draw()
-  for task, taskHandler in pairs() do
-    if taskHandler.status ~= "idle" then
-      love.graphics.rectangle("fill", equipments[taskHandler.equipment], 300, 50, 50)
-    end
+  for i, equipment in pairs(equipments) do
+    equipment.draw()
   end
 end
 
