@@ -2,6 +2,8 @@ local mqtt = require("mqtt_library")
 local Task = require "task"
 local Equipment = require "equipment"
 
+io.stdout:setvbuf("no") 
+
 -------------------------------------------------------------------------
 
 function split(s, delimiter)
@@ -15,15 +17,27 @@ end
 -------------------------------------------------------------------------
 
 function mqttcb(topic, message)
+  print("topic: "..topic, "message: "..message)
   local res = split(topic, "__")
   status = res[1]
   name = res[2]
-  tasks[name].status = status
+  eqNo = tasks[name].equipment
+  if status == "started" then
+    equipments[eqNo].setTask(name)
+  elseif status == "finished" then
+    equipments[eqNo].setTask("idle")
+  elseif status == "progress" then
+    tasks[name].percentage = tonumber(message)
+  end
 end
 
 -------------------------------------------------------------------------
 
 function love.load()
+  
+  mqtt_client = mqtt.client.create("85.119.83.194", 1883, mqttcb)
+  mqtt_client:connect("eng1412984cecinestpasunematricule")
+  
   equipments = {}
   tasks = {}
   l = love.graphics.getWidth()/10
@@ -34,6 +48,7 @@ function love.load()
   local function createTaskRegistry(equipment, taskName, hotPoints)
     local newTask = Task.new(taskName, hotPoints)
     newTask["equipment"] = equipment
+    equipments[equipment].addTask(newTask)
     return newTask
   end
   
@@ -42,6 +57,10 @@ function love.load()
   tasks["mix_it_up"] = createTaskRegistry( 1, "mix_it_up", {} )
   tasks["cool_down"] = createTaskRegistry( 3, "cool_down", {} )
   
+  for i, equipment in pairs(equipments) do
+    equipment.subscribeAllTasks()
+  end
+
 end
 
 function love.draw()
@@ -51,5 +70,5 @@ function love.draw()
 end
 
 function love.update(dt)
---  mqtt_client:handler()
+  mqtt_client:handler()
 end
