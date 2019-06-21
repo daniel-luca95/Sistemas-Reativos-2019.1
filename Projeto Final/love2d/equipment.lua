@@ -20,7 +20,7 @@ local function newEquipment(x, y, w, h)
   
   equipment["addTask"] =
     function (taskHandler)
-      table.insert(tasks, taskHandler)
+      tasks[taskHandler.name] = taskHandler
     end
   
   equipment["subscribeAllTasks"] =
@@ -42,7 +42,16 @@ local function newEquipment(x, y, w, h)
         love.graphics.setColor(colorMax * 0.5, colorMax * 0.5, colorMax * 0.5, colorMax * 0.5)
         love.graphics.rectangle("fill", equipment.x, equipment.y, equipment.w, equipment.h)
         love.graphics.setColor(colorMax, colorMax, colorMax, colorMax* 0.5)
+      else
+        love.graphics.setColor(colorMax * 0.5, colorMax * 0.5, colorMax * 0.5, colorMax * 1.0)
+        love.graphics.rectangle("fill", equipment.x, equipment.y, equipment.w, equipment.h)
+        love.graphics.setColor(colorMax * 0.0, colorMax * 0.8, colorMax * 0.0, colorMax * 1.0)
+        love.graphics.rectangle("fill", equipment.x, 
+                                        equipment.y + equipment.h * (100 - tasks[currentTask].percentage), 
+                                        equipment.w, 
+                                        equipment.h * tasks[currentTask].percentage/100)
         
+        love.graphics.setColor(colorMax * 1.0, colorMax * 1.0, colorMax * 0.0, colorMax * 1.0)
       end
       
       local textW, textH, centerX, centerY

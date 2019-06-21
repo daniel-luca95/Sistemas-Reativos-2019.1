@@ -3,29 +3,31 @@ Task = {}
 
 -------------------------------------------------------------------------
 
-local function getChannels()
-  local channels = {}
-  table.insert(channels, "started__" + nome)
-  table.insert(channels, "finished__" + nome)
-  table.insert(channels, "progress__" + nome)
-  for k, v in ipairs(hotPoints) do
-    table.insert(channels, "hotpoint__" + nome + "__" + v)
-  end
-  return channels
-end
 
 -------------------------------------------------------------------------
 
 Task["new"] = 
-  function (nome, hotPoints)
+  function (name, hotPoints)
     local task
     task = {}
     
-    task["nome"] = nome
+    local function getChannels()
+    local channels = {}
+    table.insert(channels, "started__"..name)
+    table.insert(channels, "finished__"..name)
+    table.insert(channels, "progress__"..name)
+    for k, v in ipairs(hotPoints) do
+      table.insert(channels, "hotpoint__"..name.."__"..v)
+    end
+    return channels
+  end
+
+    
+    task["name"] = name
       
     task["subscribeAll"] =
       function ()
-        mqtt_client:subscribe(getChannels())
+        mqtt_client:subscribe(getChannels(name))
       end
     
     task["percentage"] = 0 
