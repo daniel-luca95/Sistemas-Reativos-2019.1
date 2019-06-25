@@ -1,61 +1,74 @@
-local ledVermelho = 3
-local ledVerde = 6
-local sw1 = 1
-local sw2 = 2
-local correctPassword= {true,false,false,true,true}
-local seqentrada = {}
-local tolerance = 250000
-local accept = true
---Inicializando LEDs e botões
-gpio.mode(ledVermelho, gpio.OUTPUT)
-gpio.mode(ledVerde, gpio.OUTPUT)
-gpio.mode(sw1,gpio.INT,gpio.PULLUP)
-gpio.mode(sw2,gpio.INT,gpio.PULLUP)
-gpio.write(ledVermelho, gpio.LOW);
-gpio.write(ledVerde, gpio.LOW);
+package.path = package.path .. ";../?.lua"
+network_settings = require "network_settings"
 
 local IP
 
+local current_task
+local message_handlers
+message_handlers = {}
+local timer
+local taskPercentage = 0
 
-function askForPassword()
+local function percent_update()
+	taskPercentage = taskPercentage + 1
+	publish("progress__melt_chocolate",taskPercentage)
+	if taskPercentage == 50 then
+		publish("hotpoint__melt_chocolate__75", "")
+	elseif taskPercentage == 100 then
+		publish("finished__melt_chocolate","")
+		taskPercentage = 0
+		timer:stop()
+	end
+end
 	
-end 
-function publish(string)
+	
+
+local function enable_begin()
+	button1 = 1
+	gpio.mode(button1,gpio.INT,gpio.PULLUP)
+	gpio.trig(button1, "down", 
+		function (level, timestamp)
+				taskPercentage = 0
+				publish("progress__melt_chocolate", taskPercentage)
+				publish("started__melt_chocolate","")
+				timer = tmr.create()
+				timer:alarm(1000,tmr.ALARM_AUTO,percent_update)	
+				gpio.trig(button1)
+		end
+	)
+	
+end
+
+function publish(channel,string)
     print("Publishing answer "..string)
     m:publish(
-    "Authentication",string,
+    channel,string,
     0, 0, function (c) print ("Answer \""..string.."\" published.") end
     )
 end
-function connect_to_()
+
+local function set_up( client )
+
+	-- para cada task que este nó executa deve haver um código que permita ela ser iniciada
+	enable_begin()
+	m:on("message", 
+		function (client, topic, data)
+			print("client: "..client, "topic: "..topic, "data: "..data)
+			for i, handler in pairs(message_handlers) do
+				if handler(client, topic, data) then
+					break
+				end
+			end
+		end
+	)
+end
+
+local function connect_to_mqtt()
     m = mqtt.Client("Servidor"..IP, 120)
     -- conecta com servidor mqtt na mÃ¡quina 'ipbroker' e porta 1883:
     m:connect("85.119.83.194", 1883, 0,
       -- callback em caso de sucesso 
-      function(client) 
-            m:subscribe("Detection",0,  
-                   -- fÃ§ chamada qdo inscriÃ§Ã£o ok:
-                   function (client) 
-                     print("Succesfully listening to client.") 
-                   end
-                   )
-
-            m:on("message", 
-                function(client, topic, data)   
-                  print(topic .. ":" )   
-                  if data ~= nil then 
-                    if data == "Someone got in" then
-					if accept then
-                        print("Please provide password:")
-                        askForPassword();
-						gpio.write(ledVermelho, gpio.LOW);
-						gpio.write(ledVerde, gpio.LOW);
-                    end
-                    end
-                  end
-                end
-            )
-      end, 
+      set_up, 
       -- callback em caso de falha 
       function(client, reason) 
         print("failed reason: "..reason) 
@@ -65,17 +78,15 @@ end
 
 wificonf = {  
   -- verificar ssid e senha  
-  ssid = "",  
-  pwd = "",  
+  ssid = network_settings.ssid,  
+  pwd = network_settings.pwd,  
   got_ip_cb = function (con)
                 IP = con.IP
-                print ("meu IP: ", con.IP)
-                connect_to_()
+                print ("meu IP: ", IP)
+                connect_to_mqtt()
               end,
   save = false
 }
 
-
 wifi.setmode(wifi.STATION)
 wifi.sta.config(wificonf)
-
