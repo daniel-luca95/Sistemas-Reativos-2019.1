@@ -10,9 +10,9 @@ local timer
 local taskPercentage = 0
 
 local function percent_update()
-	taskPercentage = taskPercentage + 1
+	taskPercentage = taskPercentage + 5
 	publish("progress__melt_chocolate",taskPercentage)
-	if taskPercentage == 50 then
+	if taskPercentage == 75 then
 		publish("hotpoint__melt_chocolate__75", "")
 	elseif taskPercentage == 100 then
 		publish("finished__melt_chocolate","")
@@ -20,8 +20,6 @@ local function percent_update()
 		timer:stop()
 	end
 end
-	
-	
 
 local function enable_begin()
 	button1 = 1
@@ -39,6 +37,38 @@ local function enable_begin()
 	
 end
 
+local function mix_percent_update()
+	taskPercentage = taskPercentage + 25
+	publish("progress__mix_up",taskPercentage)
+	if taskPercentage == 100 then
+		publish("finished__mix_up","")
+		taskPercentage = 0
+		timer:stop()
+		enable_begin()
+	end
+end
+
+	
+local function listen_to_mix_up()
+	m:subscribe("finished__warm_milk", 0,
+       function (client) 
+         print("subscribe success to warm milk.") 
+       end
+	)
+	table.insert(message_handlers, 
+		function (client, topic, data)
+			if topic == "finished__warm_milk" then
+				taskPercentage = 0
+				publish("progress__mix_up", taskPercentage)
+				publish("started__mix_up", "")
+				timer = tmr.create()
+				timer:alarm(1000,tmr.ALARM_AUTO, mix_percent_update)	
+			end
+		end
+	)
+end
+
+
 function publish(channel,string)
     print("Publishing answer "..string)
     m:publish(
@@ -49,11 +79,11 @@ end
 
 local function set_up( client )
 
-	-- para cada task que este nó executa deve haver um código que permita ela ser iniciada
 	enable_begin()
+	listen_to_mix_up()
+	
 	m:on("message", 
 		function (client, topic, data)
-			print("client: "..client, "topic: "..topic, "data: "..data)
 			for i, handler in pairs(message_handlers) do
 				if handler(client, topic, data) then
 					break

@@ -54,7 +54,7 @@ function love.load()
   
   tasks["melt_chocolate"] = createTaskRegistry( 1, "melt_chocolate", {50})
   tasks["warm_milk"] = createTaskRegistry( 2, "warm_milk", {} )
-  tasks["mix_it_up"] = createTaskRegistry( 1, "mix_it_up", {} )
+  tasks["mix_up"] = createTaskRegistry( 1, "mix_up", {} )
   tasks["cool_down"] = createTaskRegistry( 3, "cool_down", {} )
   
   for i, equipment in pairs(equipments) do

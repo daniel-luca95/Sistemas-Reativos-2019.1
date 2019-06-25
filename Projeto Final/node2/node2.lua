@@ -11,7 +11,7 @@ local timer
 local taskPercentage = 0
 
 local function percent_update()
-	taskPercentage = taskPercentage + 4
+	taskPercentage = taskPercentage + 20
 	publish("progress__warm_milk",taskPercentage)
 	
 	if taskPercentage == 100 then

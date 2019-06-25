@@ -11,27 +11,28 @@ local timer
 local taskPercentage = 0
 
 local function percent_update()
-	taskPercentage = taskPercentage + 4
+	taskPercentage = taskPercentage + 5
 	publish("progress__cool_down",taskPercentage)
 	
 	if taskPercentage == 100 then
 		publish("finished__cool_down","")
 		taskPercentage = 0
 		timer:stop()
+		
 	end
 end
 	
 	
 
 local function enable_begin()
-	m:subscribe("finished__warm_milk", 0,
+	m:subscribe("finished__mix_up", 0,
        function (client) 
          print("subscribe success") 
        end
 	)
 	table.insert(message_handlers, 
 		function (client, topic, data)
-			if topic == "finished__warm_milk" then
+			if topic == "finished__mix_up" then
 				taskPercentage = 0
 				publish("progress__cool_down", taskPercentage)
 				publish("started__cool_down", "")
