@@ -1,6 +1,7 @@
 local mqtt = require("mqtt_library")
 local Task = require "task"
 local Equipment = require "equipment"
+local Report = require "report"
 
 io.stdout:setvbuf("no") 
 
@@ -24,8 +25,10 @@ function mqttcb(topic, message)
   eqNo = tasks[name].equipment
   if status == "started" then
     equipments[eqNo].setTask(name)
+    reports[eqNo].append(os.date("started "..name.." at ".."%c"))
   elseif status == "finished" then
     equipments[eqNo].setTask("idle")
+    reports[eqNo].append(os.date("finished "..name.." at ".."%c"))
   elseif status == "progress" then
     tasks[name].percentage = tonumber(message)
   end
@@ -39,10 +42,12 @@ function love.load()
   mqtt_client:connect("eng1412984cecinestpasunematricule")
   
   equipments = {}
+  reports = {}
   tasks = {}
   l = love.graphics.getWidth()/10
-  for i=1, 3 do
-    table.insert(equipments, Equipment.new( (3*i-2)*l,love.graphics.getHeight()/2 - 75, 2*l, 150))
+  for i, name in ipairs({"Equipamento 1", "Equipamento 2", "Equipamento 3"}) do
+    table.insert(equipments, Equipment.new(name, (3*i-2)*l, 50, 2*l, 150))
+    table.insert(reports, Report.new((3*i-2)*l, 50 + 150, 2*l, 14))
   end
   
   local function createTaskRegistry(equipment, taskName, hotPoints)
@@ -66,6 +71,9 @@ end
 function love.draw()
   for i, equipment in pairs(equipments) do
     equipment.draw()
+  end
+  for i, report in pairs(reports) do
+    report.draw()
   end
 end
 

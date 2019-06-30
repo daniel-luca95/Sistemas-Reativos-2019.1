@@ -7,14 +7,16 @@ font = love.graphics.newFont(16)
 
 -------------------------------------------------------------
 
-local function newEquipment(x, y, w, h)
+local function newEquipment(name, x, y, w, h)
   local equipment, tasks, currentTask
   equipment = {}
+  
+  equipment["name"] = name
   equipment["x"] = x
   equipment["y"] = y
   equipment["w"] = w
   equipment["h"] = h
-  
+
   tasks = {}
   currentTask = "idle"
   
@@ -37,7 +39,18 @@ local function newEquipment(x, y, w, h)
   
   equipment["draw"] =
     function ()
+      local r, g, b, a 
+      local textW, textH, centerX, centerY
+      
       r, g, b, a = love.graphics.getColor()
+      
+      love.graphics.setColor(colorMax * 1, colorMax * 0, colorMax * 0, colorMax * 1)
+      textW = font:getWidth(equipment.name)
+      textH = font:getHeight(equipment.name)
+      centerX = equipment.x + equipment.w/2
+      centerY = equipment.y - 10
+      love.graphics.print(equipment.name, font, centerX - textW/2, centerY - textH/2)
+      
       if currentTask == "idle" then
         love.graphics.setColor(colorMax * 0.5, colorMax * 0.5, colorMax * 0.5, colorMax * 0.5)
         love.graphics.rectangle("fill", equipment.x, equipment.y, equipment.w, equipment.h)
@@ -54,7 +67,6 @@ local function newEquipment(x, y, w, h)
         love.graphics.setColor(colorMax * 1.0, colorMax * 1.0, colorMax * 0.0, colorMax * 1.0)
       end
       
-      local textW, textH, centerX, centerY
       textW = font:getWidth(currentTask)
       textH = font:getHeight(currentTask)
       centerX = equipment.x + equipment.w/2
@@ -62,6 +74,7 @@ local function newEquipment(x, y, w, h)
       love.graphics.print(currentTask, font, centerX - textW/2, centerY - textH/2)
 
       love.graphics.setColor(r, g, b, a)
+
     end
   
   return equipment
@@ -70,8 +83,8 @@ end
 -------------------------------------------------------------
 
 Equipment["new"] = 
-  function (x, y, w, h)
-    return newEquipment(x, y, w, h)
+  function (name, x, y, w, h)
+    return newEquipment(name, x, y, w, h)
   end
 
 return Equipment

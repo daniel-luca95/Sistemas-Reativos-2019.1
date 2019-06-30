@@ -9,6 +9,8 @@ message_handlers = {}
 local timer
 local taskPercentage = 0
 
+local queue = {}
+
 local function percent_update()
 	taskPercentage = taskPercentage + 5
 	publish("progress__melt_chocolate",taskPercentage)
@@ -16,8 +18,18 @@ local function percent_update()
 		publish("hotpoint__melt_chocolate__75", "")
 	elseif taskPercentage == 100 then
 		publish("finished__melt_chocolate","")
-		taskPercentage = 0
 		timer:stop()
+		if #queue > 0 then
+			nextInQueue = queue[1]
+			queue[1] = nil
+			local newQueue
+			newQueue = {}
+			for i, entry in ipairs(queue) do
+				newQueue[i-1] = entry
+			end
+			queue = newQueue
+			nextInQueue()
+		end
 	end
 end
 
@@ -38,11 +50,10 @@ local function enable_begin()
 end
 
 local function mix_percent_update()
-	taskPercentage = taskPercentage + 25
+	taskPercentage = taskPercentage + 20
 	publish("progress__mix_up",taskPercentage)
 	if taskPercentage == 100 then
 		publish("finished__mix_up","")
-		taskPercentage = 0
 		timer:stop()
 		enable_begin()
 	end
@@ -58,11 +69,19 @@ local function listen_to_mix_up()
 	table.insert(message_handlers, 
 		function (client, topic, data)
 			if topic == "finished__warm_milk" then
-				taskPercentage = 0
-				publish("progress__mix_up", taskPercentage)
-				publish("started__mix_up", "")
-				timer = tmr.create()
-				timer:alarm(1000,tmr.ALARM_AUTO, mix_percent_update)	
+				local start_mix_up 
+				start_mix_up = 	function ()
+									taskPercentage = 0
+									publish("progress__mix_up", taskPercentage)
+									publish("started__mix_up", "")
+									timer = tmr.create()
+									timer:alarm(1000,tmr.ALARM_AUTO, mix_percent_update)
+								end
+				if taskPercentage == 100 then 
+					start_mix_up()
+				else
+					table.insert(queue, start_mix_up)
+				end
 			end
 		end
 	)

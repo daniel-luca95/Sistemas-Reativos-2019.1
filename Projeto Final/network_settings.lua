@@ -1,8 +1,10 @@
 local network_settings
 network_settings = {}
 
-network_settings["ssid"] = "iPhone de Bianca"
-network_settings["pwd"] = "biancalinda"
+network_settings["ssid"] = "Aaron_Net"
+network_settings["pwd"] = "aaron22766"
+
+print("ssid", network_settings.ssid)
 
 local function filter(str)
     str = str:gsub("%.","")
