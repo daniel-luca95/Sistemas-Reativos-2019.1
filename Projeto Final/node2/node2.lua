@@ -10,14 +10,15 @@ message_handlers = {}
 local timer
 local taskPercentage = 0
 
+button2 = 2
+
 local function percent_update()
 	taskPercentage = taskPercentage + 50
 	publish("progress__warm_milk",taskPercentage)
 	
 	if taskPercentage == 100 then
 		publish("finished__warm_milk","")
-		taskPercentage = 0
-		timer:stop()
+		gpio.trig(button2)
 	end
 end
 	
@@ -35,8 +36,17 @@ local function enable_begin()
 				taskPercentage = 0
 				publish("progress__warm_milk", taskPercentage)
 				publish("started__warm_milk", "")
-				timer = tmr.create()
-				timer:alarm(1000,tmr.ALARM_AUTO,percent_update)	
+				
+				local last_pressed
+				last_pressed = 0
+				gpio.mode(button2, gpio.INT, gpio.PULLUP)
+				gpio.trig(button2, "down", 	function (level, timestamp)
+												if timestamp - last_pressed > 250000 then
+													last_pressed = timestamp
+													percent_update()
+												end
+											end
+				)
 			end
 		end
 	)
