@@ -2,6 +2,9 @@ local mqtt = require("mqtt_library")
 local Task = require "task"
 local Equipment = require "equipment"
 local Report = require "report"
+local Button = require "button"
+
+colorMax = 1
 
 io.stdout:setvbuf("no") 
 
@@ -44,11 +47,20 @@ function love.load()
   equipments = {}
   reports = {}
   tasks = {}
+
   l = love.graphics.getWidth()/10
   for i, name in ipairs({"Equipamento 1", "Equipamento 2", "Equipamento 3"}) do
-    table.insert(equipments, Equipment.new(name, (3*i-2)*l, 50, 2*l, 150))
-    table.insert(reports, Report.new((3*i-2)*l, 50 + 150, 2*l, 14))
+    table.insert(equipments, Equipment.new(name, (3*i-2)*l, 75, 2*l, 150))
+    table.insert(reports, Report.new(name, (3*i-2)*l, 75 + 150, 2*l, 14))
   end
+  
+  local function saveLog()
+    for i, report in pairs(reports) do
+      report.save()
+    end
+  end
+  
+  saveLogButton = Button.new(love.graphics.getWidth() - 90, 20, 70, 20, "Save Log", saveLog)
   
   local function createTaskRegistry(equipment, taskName, hotPoints)
     local newTask = Task.new(taskName, hotPoints)
@@ -68,6 +80,18 @@ function love.load()
 
 end
 
+function love.mousepressed(x, y, button)
+  if button == 1 then
+    saveLogButton.clicked(x, y)
+  end
+end
+
+function love.mousereleased(x, y, button)
+  if button == 1 then
+    saveLogButton.released()
+  end
+end
+
 function love.draw()
   for i, equipment in pairs(equipments) do
     equipment.draw()
@@ -75,6 +99,7 @@ function love.draw()
   for i, report in pairs(reports) do
     report.draw()
   end
+  saveLogButton.draw()
 end
 
 function love.update(dt)

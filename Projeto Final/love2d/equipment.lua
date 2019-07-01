@@ -1,8 +1,8 @@
 local Equipment
 Equipment = {}
 
-local colorMax, font
-colorMax = 1
+local font
+if colorMax == nil then colorMax = 1 end
 font = love.graphics.newFont(16)
 
 -------------------------------------------------------------
