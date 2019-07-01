@@ -42,7 +42,7 @@ end
 function love.load()
   
   mqtt_client = mqtt.client.create("85.119.83.194", 1883, mqttcb)
-  mqtt_client:connect("eng1412984cecinestpasunematricule")
+  mqtt_client:connect("engdiosmiocecinestpasunematricule")
   
   equipments = {}
   reports = {}
